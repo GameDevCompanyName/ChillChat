@@ -10,12 +10,12 @@ public class Broadcaster {
     public short connectClient(Connection client){
 
         System.out.println("Broadcaster: Клиент добавлен в пул соединений");
-        printClients();
 
         if (connections.contains(client))
             return -1;
 
         connections.add(client);
+        printClients();
         return 1;
 
     }
@@ -23,12 +23,12 @@ public class Broadcaster {
     public short disconnectClient(Connection client){
 
         System.out.println("Broadcaster: Клиент удалён из пула соединений");
-        printClients();
 
         if (!connections.contains(client))
             return -1;
 
         connections.remove(client);
+        printClients();
         return 1;
 
     }

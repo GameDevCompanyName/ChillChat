@@ -18,6 +18,9 @@ public class Connection extends Thread {
     private Broadcaster broadcaster;
     private DBConnector dbConnector;
 
+    String name;
+    Integer userColor;
+
     public Connection(Socket socket, Broadcaster broadcaster, DBConnector dbConnector) {
 
         this.broadcaster = broadcaster;
@@ -50,13 +53,8 @@ public class Connection extends Thread {
 
                 JSONObject loginAttempt = (JSONObject) JSONValue.parse(message);
 
-                if (!((String) loginAttempt.get("type")).equals("3")){
-                    System.out.println("Неудачная попытка логина у " + socket.getInetAddress());
-                    continue;
-                }
-
-                String login = (String) loginAttempt.get("name");
-                String password = (String) loginAttempt.get("text");
+                String login = (String) loginAttempt.get("login");
+                String password = (String) loginAttempt.get("password");
 
                 int loginAttemptCode = dbConnector.checkLoginAttempt(login, password);
                 //colorCode > 0 - удачно, пользователь существовал
@@ -65,8 +63,13 @@ public class Connection extends Thread {
 
                 if (loginAttemptCode > 0){
                     System.out.println(login + " удачно залогинился в чате.");
+                    userColor = loginAttemptCode;
+                    sendLoginMessage(loginAttemptCode);
+                    name = login;
                     loggedIn = true;
                 }
+
+                sendMessage(new Message("Залогинится не удалось", "Server", loginAttemptCode, 3));
 
             }
 
@@ -79,19 +82,11 @@ public class Connection extends Thread {
                 String incomingMessage = in.readLine();
                 JSONObject jsonMessage = (JSONObject) JSONValue.parse(incomingMessage);
 
-                if (((String) jsonMessage.get("type")).equals("4")){
-                    broadcaster.disconnectClient(this);
-                    clientConnected = false;
-                    System.out.println(((String) jsonMessage.get("name")) + " задисконектился пиздец куда он ушёл ну и пиздуй нахуй долбаёб");
-                    continue;
-                }
-
                 Message message = new Message(
                         (String) jsonMessage.get("text"),
-                        (String) jsonMessage.get("name"),
-                        Integer.parseInt((String) jsonMessage.get("color")),
-                        Integer.parseInt((String) jsonMessage.get("type"))
-                );
+                        name,
+                        userColor,
+                        1);
 
                 broadcaster.broadcastMessage(message);
 
@@ -99,11 +94,17 @@ public class Connection extends Thread {
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(name + " разорвал соединение.");
+            broadcaster.disconnectClient(this);
         }
 
+    }
 
-
+    private void sendLoginMessage(int loginAttemptCode) {
+        JSONObject object = new JSONObject();
+        object.put("type", "3");
+        object.put("response", Integer.toString(loginAttemptCode));
+        out.println(object.toJSONString());
     }
 
     public void sendMessage(Message message){
@@ -112,8 +113,7 @@ public class Connection extends Thread {
         object.put("text", message.getText());
         object.put("name", message.getSenderName());
         object.put("color", Integer.toString(message.getColorCode()));
-        object.put("type", Integer.toString(message.getColorCode()));
-
+        object.put("type", "1");
         out.println(object.toJSONString());
 
     }
