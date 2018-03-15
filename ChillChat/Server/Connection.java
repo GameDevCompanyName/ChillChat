@@ -4,11 +4,9 @@ package ChillChat.Server;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 public class Connection extends Thread {
 
@@ -18,19 +16,19 @@ public class Connection extends Thread {
     private Broadcaster broadcaster;
     private DBConnector dbConnector;
 
-    String name;
-    Integer userColor;
+    String name;  //Имя пользователя
+    Integer userColor;  //Цвет пользователя
 
     public Connection(Socket socket, Broadcaster broadcaster, DBConnector dbConnector) {
 
         this.broadcaster = broadcaster;
         this.dbConnector = dbConnector;
-
         this.socket = socket;
 
         try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
+
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
+            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8"))), true);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,11 +46,10 @@ public class Connection extends Thread {
             while (!loggedIn){
 
                 System.out.println("Ожидание попытки залогинится.");
+                String message = in.readLine();  //Ждем сообщение от клиента
 
-                String message = in.readLine();
-
+                //Распарсили сообщение в стринги
                 JSONObject loginAttempt = (JSONObject) JSONValue.parse(message);
-
                 String login = (String) loginAttempt.get("login");
                 String password = (String) loginAttempt.get("password");
 
