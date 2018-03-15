@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static ChillChat.Server.Parameters.PORT;
+import static ChillChat.GlobalParameters.PORT;
 
 
 public class Server {

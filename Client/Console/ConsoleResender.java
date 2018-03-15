@@ -1,4 +1,4 @@
-package ChillChat.Client;
+package ChillChat.Client.Console;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -38,9 +38,10 @@ class ConsoleResender extends Thread {
 
                 if (message.get("type").equals("1")){
 
-
                     String name = message.get("name").toString();
                     String text = message.get("text").toString();
+
+                    /*
 
                     Integer color = Integer.parseInt(message.get("color").toString());
 
@@ -72,6 +73,11 @@ class ConsoleResender extends Thread {
                     }
 
                     System.out.println("\n" + getTime() + " " + colorizer + name + ": " + text + "\u001B[0m");
+
+                    */
+
+                    System.out.println("\n" + getTime() + " " + name + ": " + text);
+
                 }
 
             }

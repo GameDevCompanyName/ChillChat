@@ -1,4 +1,4 @@
-package ChillChat.Client;
+package ChillChat.Client.Console;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-import static ChillChat.Server.Parameters.PORT;
+import static ChillChat.GlobalParameters.PORT;
 
 public class ConsoleClient {
 

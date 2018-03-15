@@ -1,4 +1,4 @@
-package ChillChat.Client;
+package ChillChat.Client.Console;
 
 public class ConsoleMessenger {
 

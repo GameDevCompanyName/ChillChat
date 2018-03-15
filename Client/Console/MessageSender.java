@@ -1,4 +1,4 @@
-package ChillChat.Client;
+package ChillChat.Client.Console;
 
 import java.io.PrintWriter;
 import java.util.Date;
