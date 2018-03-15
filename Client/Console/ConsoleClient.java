@@ -7,9 +7,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static ChillChat.GlobalParameters.IP;
 import static ChillChat.GlobalParameters.PORT;
 
-public class ConsoleClient {
+public class ConsoleClient extends Thread {
 
     private Socket socket;
 
@@ -20,31 +21,20 @@ public class ConsoleClient {
     ConsoleLogIn logIn;
     ConsoleMessenger consoleMessenger;
 
-
     String name;
 
-    public ConsoleClient() {
-
-        this.scanner = new Scanner(System.in);
-
-    }
-
+    @Override
     public void start(){
 
-        System.out.println("Введите IP для подключения к серверу.");
-        System.out.println("Формат: xxx.xxx.xxx.xxx");
-
-        String ip = scanner.nextLine();
-
         try {
-            socket = new Socket(ip, PORT);
+            socket = new Socket(IP, PORT);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         logIn = new ConsoleLogIn(this);
+
         initStreams();
-        logIn.tryToLogIn();
 
     }
 
@@ -69,4 +59,7 @@ public class ConsoleClient {
 
     }
 
+    public ConsoleLogIn getLogIn() {
+        return logIn;
+    }
 }

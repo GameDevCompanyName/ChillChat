@@ -33,6 +33,10 @@ class ConsoleResender extends Thread {
                 JSONObject message = (JSONObject) JSONValue.parse(str);
 
                 if (message.get("type").equals("3")){
+                    System.out.println(message.get("response"));
+                    System.out.println(message.get("response").toString());
+                    System.out.println((String) message.get("response"));
+
                     logIn.serverAnswer(message.get("response").toString());
                 }
 

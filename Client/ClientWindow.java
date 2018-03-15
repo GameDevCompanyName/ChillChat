@@ -1,14 +1,15 @@
 package ChillChat.Client;
 
+import ChillChat.Client.Console.ConsoleClient;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -18,7 +19,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 
-import static ChillChat.Client.Constants.LOGO_SHOW_TIME;
+import static ChillChat.Client.Constants.*;
 
 public class ClientWindow {
 
@@ -27,7 +28,9 @@ public class ClientWindow {
     private final Group totalGroup;
     private final MediaPlayer soundPlayer;
 
-    private Pane activePane;
+    private ConsoleClient consoleClient;
+
+    private Node activeNode;
 
 
     public ClientWindow(Stage primaryStage) {
@@ -37,18 +40,15 @@ public class ClientWindow {
         clientScene = new Scene(totalGroup,
                 Screen.getPrimary().getBounds().getWidth(),
                 Screen.getPrimary().getBounds().getHeight(),
-                Color.BISQUE);
-
-        clientScene.heightProperty();
-
-
+                Color.BLACK);
 
         clientStage.setScene(clientScene);
 
         String uriString = new File("resources/music/ss13theme.mp3").toURI().toString();
         soundPlayer = new MediaPlayer(new Media(uriString));
         soundPlayer.setVolume(0.05);
-        //soundPlayer.play();
+        if (PLAY_MUSIC_ON_START)
+            soundPlayer.play();
 
     }
 
@@ -65,6 +65,8 @@ public class ClientWindow {
 
         centralPane.prefWidthProperty().bind(clientScene.widthProperty());
         centralPane.prefHeightProperty().bind(clientScene.heightProperty());
+        centralPane.maxWidthProperty().bind(clientScene.widthProperty());
+        centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
         centralPane.getChildren().add(logoImage);
         centralPane.setAlignment(logoImage, Pos.CENTER);
@@ -96,14 +98,64 @@ public class ClientWindow {
 
     private void launchLogIn(StackPane centralPane) {
 
+        ImageView background = new ImageView(new Image(new File("resources/images/chill.gif").toURI().toString()));
+        background.scaleXProperty().bind(centralPane.widthProperty().divide(350));
+        background.scaleYProperty().bind(centralPane.widthProperty().divide(350));
+        background.setOpacity(0);
 
+        consoleClient = new ConsoleClient();
+        consoleClient.start();
 
-        LogInInterface logInInterface = new LogInInterface();
-        VBox logInBox = logInInterface.getBox();
-        centralPane.getChildren().add(logInBox);
+        LogInInterface logInInterface = new LogInInterface(this, centralPane, consoleClient.getLogIn());
+        Pane logInBox = logInInterface.getContainer();
+        logInBox.setOpacity(0);
+
+        consoleClient.getLogIn().setLogInInterface(logInInterface);
+
+        logInBox.maxWidthProperty().bind(centralPane.widthProperty());
+        logInBox.maxHeightProperty().bind(centralPane.heightProperty());
+
+        if (DEBUG){
+            logInBox.setStyle("-fx-border-color: green");
+        }
+
+        logInInterface.setTextColor(Color.WHITESMOKE);
+
+        activeNode = centralPane;
+
+        centralPane.getChildren().addAll(background, logInBox);
+
         centralPane.setAlignment(logInBox, Pos.CENTER);
+        centralPane.setAlignment(background, Pos.CENTER);
 
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), logInBox);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
 
+        FadeTransition backFadeIn = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME*2), background);
+        backFadeIn.setFromValue(0);
+        backFadeIn.setToValue(1);
+
+        backFadeIn.play();
+        fadeIn.play();
 
     }
+
+    public void loggedIn() {
+
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(e -> changeToMessenger());
+        fadeOut.play();
+
+    }
+
+    private void changeToMessenger() {
+
+        StackPane messengerPane = new StackPane();
+        activeNode = messengerPane;
+
+    }
+
 }

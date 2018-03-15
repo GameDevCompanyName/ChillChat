@@ -64,12 +64,11 @@ public class Connection extends Thread {
                 if (loginAttemptCode > 0){
                     System.out.println(login + " удачно залогинился в чате.");
                     userColor = loginAttemptCode;
-                    sendLoginMessage(loginAttemptCode);
                     name = login;
                     loggedIn = true;
                 }
 
-                sendMessage(new Message("Залогинится не удалось", "Server", loginAttemptCode, 3));
+                sendLoginMessage(loginAttemptCode);
 
             }
 

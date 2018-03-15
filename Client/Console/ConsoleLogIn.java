@@ -1,19 +1,17 @@
 package ChillChat.Client.Console;
 
+import ChillChat.Client.LogInInterface;
+
 public class ConsoleLogIn {
 
+    LogInInterface logInInterface;
     ConsoleClient consoleClient;
 
-    public ConsoleLogIn(ConsoleClient consoleClient) {
-        this.consoleClient = consoleClient;
+    public ConsoleLogIn(ConsoleClient client) {
+        this.consoleClient = client;
     }
 
-    public void tryToLogIn() {
-        System.out.println("---Попытка авторизации---");
-        System.out.println("Введите логин: ");
-        String login = consoleClient.scanner.nextLine();
-        System.out.println("Введите пароль: ");
-        String pass = consoleClient.scanner.nextLine();
+    public void tryToLogIn(String login, String pass) {
         sendLogInAttempt(login, pass);
     }
 
@@ -21,16 +19,19 @@ public class ConsoleLogIn {
         consoleClient.out.println(JsonHandler.getString(login, pass));
     }
 
+    public void setLogInInterface(LogInInterface inInterface){
+        logInInterface = inInterface;
+    }
+
     public void serverAnswer(String response){
 
         if (response.equals("-1")){
-            System.out.println("Авторизация не удалась.");
-            tryToLogIn();
+            logInInterface.wrongPass();
             return;
         }
 
         System.out.println("Удачно авторизован.");
-        consoleClient.loggedIn();
+        logInInterface.loggedIn();
 
     }
 

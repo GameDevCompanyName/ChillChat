@@ -32,6 +32,8 @@ public class DBConnector {
             e.printStackTrace();
         }
 
+        //В случае провала мы ещё раз пробуем почему НЕТ????
+        //TODO()
         return checkLoginAttempt(login, password);
 
     }
