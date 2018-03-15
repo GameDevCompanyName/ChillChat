@@ -29,6 +29,7 @@ public class ClientWindow {
     private final MediaPlayer soundPlayer;
 
     private ConsoleClient consoleClient;
+    private Messenger messenger;
 
     private Node activeNode;
 
@@ -103,7 +104,7 @@ public class ClientWindow {
         background.scaleYProperty().bind(centralPane.widthProperty().divide(350));
         background.setOpacity(0);
 
-        consoleClient = new ConsoleClient();
+        consoleClient = new ConsoleClient(this);
         consoleClient.start();
 
         LogInInterface logInInterface = new LogInInterface(this, centralPane, consoleClient.getLogIn());
@@ -153,9 +154,26 @@ public class ClientWindow {
 
     private void changeToMessenger() {
 
-        StackPane messengerPane = new StackPane();
-        activeNode = messengerPane;
+        StackPane centralPane = new StackPane();
 
+        centralPane.prefWidthProperty().bind(clientScene.widthProperty());
+        centralPane.prefHeightProperty().bind(clientScene.heightProperty());
+        centralPane.maxWidthProperty().bind(clientScene.widthProperty());
+        centralPane.maxHeightProperty().bind(clientScene.heightProperty());
+
+        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene);
+        this.messenger = messenger;
+
+        totalGroup.getChildren().remove(activeNode);
+        centralPane.getChildren().add(messenger.getContainer());
+        activeNode = centralPane;
+        totalGroup.getChildren().add(activeNode);
+
+    }
+
+    public void displayMessage(String name, String text, Integer color) {
+        if (messenger != null)
+            messenger.displayMessage(name, text, color);
     }
 
 }

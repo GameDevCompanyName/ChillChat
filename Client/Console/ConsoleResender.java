@@ -1,5 +1,7 @@
 package ChillChat.Client.Console;
 
+import ChillChat.Client.ClientWindow;
+import javafx.application.Platform;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -12,11 +14,12 @@ class ConsoleResender extends Thread {
 
     private BufferedReader in;
     private ConsoleLogIn logIn;
+    private ClientWindow clientWindow;
 
-    public ConsoleResender(BufferedReader in, ConsoleLogIn logIn) {
+    public ConsoleResender(BufferedReader in, ConsoleLogIn logIn, ClientWindow clientWindow) {
         this.in = in;
         this.logIn = logIn;
-
+        this.clientWindow = clientWindow;
     }
 
     public void setStop() {
@@ -32,57 +35,29 @@ class ConsoleResender extends Thread {
 
                 JSONObject message = (JSONObject) JSONValue.parse(str);
 
-                if (message.get("type").equals("3")){
-                    System.out.println(message.get("response"));
-                    System.out.println(message.get("response").toString());
-                    System.out.println((String) message.get("response"));
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (message.get("type").equals("3")){
+                            System.out.println(message.get("response"));
+                            System.out.println(message.get("response").toString());
+                            System.out.println((String) message.get("response"));
 
-                    logIn.serverAnswer(message.get("response").toString());
-                }
+                            logIn.serverAnswer(message.get("response").toString());
+                        }
 
-                if (message.get("type").equals("1")){
+                        if (message.get("type").equals("1")){
 
-                    String name = message.get("name").toString();
-                    String text = message.get("text").toString();
+                            String name = message.get("name").toString();
+                            String text = message.get("text").toString();
 
-                    /*
+                            Integer color = Integer.parseInt(message.get("color").toString());
 
-                    Integer color = Integer.parseInt(message.get("color").toString());
+                            clientWindow.displayMessage(name, text, color);
 
-                    String colorizer = "\u001B[0m";
-
-                    switch (color){
-                        case 2:
-                            colorizer = "\u001B[31m";
-                            break;
-                        case 3:
-                            colorizer = "\u001B[32m";
-                            break;
-                        case 4:
-                            colorizer = "\u001B[33m";
-                            break;
-                        case 5:
-                            colorizer = "\u001B[34m";
-                            break;
-                        case 6:
-                            colorizer = "\u001B[35m";
-                            break;
-                        case 7:
-                            colorizer = "\u001B[36m";
-                            break;
-                        case 8:
-                            colorizer = "\u001B[37m";
-                            break;
-
+                        }
                     }
-
-                    System.out.println("\n" + getTime() + " " + colorizer + name + ": " + text + "\u001B[0m");
-
-                    */
-
-                    System.out.println("\n" + getTime() + " " + name + ": " + text);
-
-                }
+                });
 
             }
 

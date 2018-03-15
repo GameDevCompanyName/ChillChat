@@ -1,10 +1,10 @@
 package ChillChat.Client.Console;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import ChillChat.Client.ClientWindow;
+
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.Scanner;
 
 import static ChillChat.GlobalParameters.IP;
@@ -19,9 +19,13 @@ public class ConsoleClient extends Thread {
     ConsoleResender resender;
     Scanner scanner;
     ConsoleLogIn logIn;
-    ConsoleMessenger consoleMessenger;
+    ClientWindow clientWindow;
 
     String name;
+
+    public ConsoleClient(ClientWindow clientWindow) {
+        this.clientWindow = clientWindow;
+    }
 
     @Override
     public void start(){
@@ -41,17 +45,15 @@ public class ConsoleClient extends Thread {
     public void loggedIn(){
 
         System.out.println("Подключаюсь к общему чату...");
-        consoleMessenger = new ConsoleMessenger(this);
-        consoleMessenger.start();
 
     }
 
     private void initStreams() {
 
         try{
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
-            resender = new ConsoleResender(in, logIn);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
+            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8")), true);
+            resender = new ConsoleResender(in, logIn, clientWindow);
             resender.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,4 +64,9 @@ public class ConsoleClient extends Thread {
     public ConsoleLogIn getLogIn() {
         return logIn;
     }
+
+    public void sendMessage(String formedMessage){
+        out.println(formedMessage);
+    }
+
 }
