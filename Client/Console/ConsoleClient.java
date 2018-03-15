@@ -5,7 +5,6 @@ import ChillChat.Client.ClientWindow;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.Scanner;
 
 import static ChillChat.Client.Constants.IP;
 import static ChillChat.Client.Constants.PORT;
@@ -17,7 +16,6 @@ public class ConsoleClient extends Thread {
     BufferedReader in;
     PrintWriter out;
     ConsoleResender resender;
-    Scanner scanner;
     ConsoleLogIn logIn;
     ClientWindow clientWindow;
 
