@@ -12,8 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-import static ChillChat.Client.Constants.DEBUG;
-
 public class LogInInterface {
 
     private ConsoleLogIn logIn;
@@ -80,7 +78,7 @@ public class LogInInterface {
         interfacePane.getChildren().add(box);
         interfacePane.setAlignment(box, Pos.CENTER);
 
-        if (DEBUG){
+        if (Constants.DEBUG){
             interfacePane.setStyle("-fx-border-color: red");
             box.setStyle("-fx-border-color: blue");
 

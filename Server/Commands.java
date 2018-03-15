@@ -1,7 +1,5 @@
 package ChillChat.Server;
 
-import java.sql.SQLException;
-
 public class Commands {
     private DBConnector dbConnector;
    public Commands(DBConnector dbConnector)

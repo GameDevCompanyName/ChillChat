@@ -7,8 +7,8 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.Scanner;
 
-import static ChillChat.GlobalParameters.IP;
-import static ChillChat.GlobalParameters.PORT;
+import static ChillChat.Client.Constants.IP;
+import static ChillChat.Client.Constants.PORT;
 
 public class ConsoleClient extends Thread {
 

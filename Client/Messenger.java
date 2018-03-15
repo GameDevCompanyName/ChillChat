@@ -11,8 +11,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-import static ChillChat.Client.Constants.DEBUG;
-
 public class Messenger {
 
     Scene clientScene;
@@ -40,7 +38,7 @@ public class Messenger {
         this.consoleClient = consoleClient;
         messengerBox = new VBox();
 
-        if (DEBUG)
+        if (Constants.DEBUG)
             messengerBox.setStyle("-fx-border-color: yellow");
 
         messengerBox.prefHeightProperty().bind(centralPane.heightProperty());
@@ -50,7 +48,7 @@ public class Messenger {
 
         StackPane consolePane = new StackPane();
 
-        if (DEBUG)
+        if (Constants.DEBUG)
             consolePane.setStyle("-fx-border-color: orange");
 
         inputField = new TextField();
