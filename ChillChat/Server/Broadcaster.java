@@ -7,14 +7,15 @@ public class Broadcaster {
 
     List<Connection> connections = new ArrayList();
 
+
     public short connectClient(Connection client){
 
-        System.out.println("Broadcaster: Клиент добавлен в пул соединений");
 
         if (connections.contains(client))
             return -1;
 
         connections.add(client);
+        System.out.println("Broadcaster: Клиент добавлен в пул соединений");
         printClients();
         return 1;
 
@@ -22,12 +23,11 @@ public class Broadcaster {
 
     public short disconnectClient(Connection client){
 
-        System.out.println("Broadcaster: Клиент удалён из пула соединений");
-
         if (!connections.contains(client))
             return -1;
 
         connections.remove(client);
+        System.out.println("Broadcaster: Клиент удалён из пула соединений");
         printClients();
         return 1;
 
@@ -39,10 +39,9 @@ public class Broadcaster {
 
     public short broadcastMessage(Message message){
 
-        System.out.println("Broadcaster: Отправляю всем сообщение");
-
         try {
             for (Connection connection: connections) {
+                System.out.println("Broadcaster: Отправляю всем сообщение");
                 connection.sendMessage(message);
             }
         } catch (Exception e){
