@@ -7,6 +7,8 @@ public class ConsoleLogIn {
     LogInInterface logInInterface;
     ConsoleClient consoleClient;
 
+    int color;
+
     public ConsoleLogIn(ConsoleClient client) {
         this.consoleClient = client;
     }
@@ -30,10 +32,18 @@ public class ConsoleLogIn {
             return;
         }
 
+        if (response.equals("-2")) {
+            logInInterface.userAlreadyExists();
+        }
+
+        color = Integer.parseInt(response);
         System.out.println("Удачно авторизован.");
         logInInterface.loggedIn();
 
     }
 
 
+    public Integer getColor() {
+        return color;
+    }
 }

@@ -1,6 +1,8 @@
 package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleClient;
+import ChillChat.Client.Utilites.MusicPlayer;
+import ChillChat.Client.Utilites.Utils;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -10,8 +12,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -19,17 +19,18 @@ import javafx.util.Duration;
 
 import java.io.File;
 
-import static ChillChat.Client.Constants.*;
+import static ChillChat.Client.Utilites.Constants.*;
 
 public class ClientWindow {
 
     private final Stage clientStage;
     private final Scene clientScene;
     private final Group totalGroup;
-    private final MediaPlayer soundPlayer;
 
     private ConsoleClient consoleClient;
     private Messenger messenger;
+
+    private MusicPlayer musicPlayer;
 
     private Node activeNode;
 
@@ -45,14 +46,18 @@ public class ClientWindow {
 
         clientStage.setScene(clientScene);
 
-        String uriString = new File("resources/music/ss13theme.mp3").toURI().toString();
-        soundPlayer = new MediaPlayer(new Media(uriString));
-        soundPlayer.setVolume(0.05);
-        if (PLAY_MUSIC_ON_START)
-            soundPlayer.play();
+        musicPlayer = new MusicPlayer();
+        musicPlayer.start();
+
+        clientStage.setOnCloseRequest(e -> closeAllThreads());
 
     }
 
+    private void closeAllThreads() {
+        if (consoleClient != null)
+            consoleClient.closeAllThreads();
+        System.exit(1);
+    }
 
     public void launch() {
 
@@ -99,9 +104,10 @@ public class ClientWindow {
 
     private void launchLogIn(StackPane centralPane) {
 
-        ImageView background = new ImageView(new Image(new File("resources/images/chill.gif").toURI().toString()));
-        background.scaleXProperty().bind(centralPane.widthProperty().divide(350));
-        background.scaleYProperty().bind(centralPane.widthProperty().divide(350));
+        ImageView background = new ImageView(Utils.getRandomLogInBackground());
+        double scaleCoef = (350*500)/background.getImage().getWidth();
+        background.scaleXProperty().bind(centralPane.widthProperty().divide(scaleCoef));
+        background.scaleYProperty().bind(centralPane.widthProperty().divide(scaleCoef));
         background.setOpacity(0);
 
         consoleClient = new ConsoleClient(this);
@@ -154,6 +160,8 @@ public class ClientWindow {
 
     private void changeToMessenger() {
 
+        musicPlayer.slowShutUp();
+
         StackPane centralPane = new StackPane();
 
         centralPane.prefWidthProperty().bind(clientScene.widthProperty());
@@ -161,7 +169,7 @@ public class ClientWindow {
         centralPane.maxWidthProperty().bind(clientScene.widthProperty());
         centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
-        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene);
+        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, consoleClient.getColor());
         this.messenger = messenger;
 
         totalGroup.getChildren().remove(activeNode);
@@ -176,4 +184,8 @@ public class ClientWindow {
             messenger.displayMessage(name, text, color);
     }
 
+    public void displayServerMessage(String text) {
+        if (messenger != null)
+            messenger.displayServerMessage(text);
+    }
 }

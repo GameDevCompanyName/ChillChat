@@ -1,6 +1,7 @@
 package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleLogIn;
+import ChillChat.Client.Utilites.Constants;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -35,8 +36,9 @@ public class LogInInterface {
         this.clientWindow = clientWindow;
         this.logIn = logIn;
 
-        Font title = new Font("Century Gothic", 28);
+        Font title = new Font("Century Gothic", 30);
         Font common = new Font("Century Gothic", 12);
+        Font error = new Font("Century Gothic", 22);
 
         this.box = new VBox();
         loginField = new TextField();
@@ -52,7 +54,7 @@ public class LogInInterface {
         titleText.setFont(title);
         inputLogin.setFont(common);
         inputPassword.setFont(common);
-        loginState.setFont(common);
+        loginState.setFont(error);
         loginState.setTextFill(Color.RED);
 
         acceptButton.setOnMouseClicked(e -> tryToLogIn());
@@ -111,13 +113,25 @@ public class LogInInterface {
             return;
         }
 
+        if (passwordField.getText().length() > 20 || loginField.getText().length() > 20){
+            tooLongInput();
+            return;
+        }
+
         logIn.tryToLogIn(loginField.getText(),
                 passwordField.getText());
 
+    }
+
+    private void tooLongInput() {
+        loginState.setText("Пароль или логин\nслишком длинный");
     }
 
     private void wrongInput() {
         loginState.setText("Некорректные данные");
     }
 
+    public void userAlreadyExists() {
+        loginState.setText("Юзер с таким логином\nуже подключен");
+    }
 }

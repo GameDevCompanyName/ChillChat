@@ -1,4 +1,4 @@
-package ChillChat.Client;
+package ChillChat.Client.Utilites;
 
 public class Constants {
 
@@ -10,7 +10,7 @@ public class Constants {
     //LOGIN = 2.5
 
     public final static Double LOGO_SHOW_TIME = 2.0;
-    public final static Double LOGIN_FADE_TIME = 1.0;
+    public final static Double LOGIN_FADE_TIME = 1.5;
 
     public final static Boolean DEBUG = false;
     public final static Boolean PLAY_MUSIC_ON_START = true;

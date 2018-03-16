@@ -17,10 +17,5 @@ public class Client extends Application {
 
         clientWindow.launch();
 
-        /*
-        ConsoleClient client = new ConsoleClient();
-        client.start();
-        */
-
     }
 }

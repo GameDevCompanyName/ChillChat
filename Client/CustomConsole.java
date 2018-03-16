@@ -1,35 +1,30 @@
 package ChillChat.Client;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
-import static ChillChat.Client.Constants.DEBUG;
+import static ChillChat.Client.Utilites.Constants.DEBUG;
 
 public class CustomConsole {
 
     StackPane mainBox;
     ScrollPane scrollPane;
     VBox textBox;
-    Font font;
 
     public CustomConsole(StackPane parentPane){
 
         mainBox = new StackPane();
         textBox = new VBox();
         scrollPane = new ScrollPane();
-        font = Font.font("Courier New", FontWeight.LIGHT, 16);
 
         mainBox.prefHeightProperty().bind(parentPane.heightProperty());
         mainBox.prefWidthProperty().bind(parentPane.widthProperty());
@@ -39,12 +34,6 @@ public class CustomConsole {
         if (DEBUG)
             mainBox.setStyle("-fx-border-color: red");
         mainBox.setAlignment(Pos.CENTER);
-
-        /*
-        textBox.heightProperty().addListener(event -> {
-            slowScrollToBottom();
-        });
-        */
 
         scrollPane.setContent(textBox);
         if (DEBUG)
@@ -63,12 +52,6 @@ public class CustomConsole {
 
         mainBox.getChildren().addAll(scrollPane);
 
-        /*
-        for (int i = 0; i < 100; i++){
-            textAppend(GameTexts.randomLoadingText());
-        }
-        */
-
     }
 
     private void slowScrollToBottom() {
@@ -78,33 +61,78 @@ public class CustomConsole {
         animation.play();
     }
 
-    public void textAppend(String name, String text, Integer color) {
+    public void textAppend(String name, String text, Integer color){
 
-        Label newText = new Label(name + ": " + text);
+        TextFlow flow = new TextFlow();
+        Font textFont = new Font("Courier New", 18);
 
-        newText.setFont(font);
-        newText.setWrapText(true);
-        if (DEBUG)
-            newText.setStyle("-fx-border-color: orange");
-        newText.maxWidthProperty().bind(scrollPane.widthProperty());
+        Text t1 = new Text();
+        t1.setFont(textFont);
+        t1.setText(name + ": ");
 
-        textBox.getChildren().add(newText);
+        Text t2 = new Text();
+        t2.setStyle("-fx-fill: Lavender;");
+        t2.setText(text);
+        t2.setFont(textFont);
+
+        switch (color){
+            case 1:
+                t1.setStyle("-fx-fill: Crimson;");
+                break;
+            case 2:
+                t1.setStyle("-fx-fill: CornflowerBlue;");
+                break;
+            case 3:
+                t1.setStyle("-fx-fill: Cyan;");
+                break;
+            case 4:
+                t1.setStyle("-fx-fill: DarkOrange;");
+                break;
+            case 5:
+                t1.setStyle("-fx-fill: DarkSeaGreen;");
+                break;
+            case 6:
+                t1.setStyle("-fx-fill: ForestGreen;");
+                break;
+            case 7:
+                t1.setStyle("-fx-fill: Khaki;");
+                break;
+            case 8:
+                t1.setStyle("-fx-fill: HotPink;");
+                break;
+        }
+
+        flow.getChildren().addAll(t1, t2);
+        flow.setOpacity(0.0);
+
+        textBox.getChildren().add(flow);
+
+        Timeline shutUpAnimation = new Timeline();
+        shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(flow.opacityProperty(), 0)));
+        shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.6), new KeyValue(flow.opacityProperty(), 1)));
+        shutUpAnimation.play();
 
         slowScrollToBottom();
 
     }
 
-    /*
-    public void textAppend(String text) {
-
-        textAppend(text, MessageType.DEFAULT);
-
-    }
-    */
-
     public Node getBox() {
         return mainBox;
     }
 
+    public void serverMessageAppend(String text) {
+
+        TextFlow flow = new TextFlow();
+        Font textFont = new Font("Courier New", 20);
+
+        Text t1 = new Text();
+        t1.setFont(textFont);
+        t1.setText("[SERVER]: " + text);
+        t1.setStyle("-fx-fill: LightSkyBlue;");
+
+        flow.getChildren().add(t1);
+        textBox.getChildren().add(flow);
+
+    }
 }
 

@@ -23,7 +23,7 @@ class ConsoleResender extends Thread {
     }
 
     public void setStop() {
-        stoped = true;
+        System.exit(1);
     }
 
     @Override
@@ -39,10 +39,6 @@ class ConsoleResender extends Thread {
                     @Override
                     public void run() {
                         if (message.get("type").equals("3")){
-                            System.out.println(message.get("response"));
-                            System.out.println(message.get("response").toString());
-                            System.out.println((String) message.get("response"));
-
                             logIn.serverAnswer(message.get("response").toString());
                         }
 
@@ -56,6 +52,24 @@ class ConsoleResender extends Thread {
                             clientWindow.displayMessage(name, text, color);
 
                         }
+
+                        if (message.get("type").equals("2")){
+
+                            String text = message.get("text").toString();
+
+                            clientWindow.displayServerMessage(text);
+
+                        }
+
+                        if (message.get("type").equals("4")){
+
+                            String reason = message.get("reason").toString();
+
+                            clientWindow.displayServerMessage("Вы были отключены от сервера. Причина:");
+                            clientWindow.displayServerMessage(reason);
+
+                        }
+
                     }
                 });
 

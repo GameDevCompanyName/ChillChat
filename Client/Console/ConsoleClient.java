@@ -6,8 +6,8 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
-import static ChillChat.Client.Constants.IP;
-import static ChillChat.Client.Constants.PORT;
+import static ChillChat.Client.Utilites.Constants.IP;
+import static ChillChat.Client.Utilites.Constants.PORT;
 
 public class ConsoleClient extends Thread {
 
@@ -67,4 +67,17 @@ public class ConsoleClient extends Thread {
         out.println(formedMessage);
     }
 
+    public void closeAllThreads() {
+        resender.setStop();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.exit(1);
+    }
+
+    public Integer getColor() {
+        return logIn.getColor();
+    }
 }

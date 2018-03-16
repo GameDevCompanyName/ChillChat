@@ -2,6 +2,7 @@ package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleClient;
 import ChillChat.Client.Console.JsonHandler;
+import ChillChat.Client.Utilites.Constants;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -10,6 +11,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 public class Messenger {
 
@@ -22,7 +24,7 @@ public class Messenger {
     TextField inputField;
 
 
-    public Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene) {
+    public Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Integer color) {
 
         this.clientScene = clientScene;
 
@@ -52,6 +54,35 @@ public class Messenger {
             consolePane.setStyle("-fx-border-color: orange");
 
         inputField = new TextField();
+        inputField.setFont(new Font("Courier New", 16));
+
+        switch (color){
+            case 1:
+                inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: Crimson;");
+                break;
+            case 2:
+                inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: CornflowerBlue;");
+                break;
+            case 3:
+                inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: Cyan;");
+                break;
+            case 4:
+                inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: DarkOrange;");
+                break;
+            case 5:
+                inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: DarkSeaGreen;");
+                break;
+            case 6:
+                inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: ForestGreen;");
+                break;
+            case 7:
+                inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: Khaki;");
+                break;
+            case 8:
+                inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: HotPink;");
+                break;
+        }
+
         inputField.prefWidthProperty().bind(centralPane.widthProperty());
 
         consolePane.prefHeightProperty().bind(messengerBox.heightProperty().subtract(inputField.heightProperty()));
@@ -83,6 +114,10 @@ public class Messenger {
 
     private void sendMessage(String text) {
         consoleClient.sendMessage(JsonHandler.getString(text));
+    }
+
+    public void displayServerMessage(String text) {
+        console.serverMessageAppend(text);
     }
 
 }
