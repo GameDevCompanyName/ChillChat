@@ -55,6 +55,9 @@ public class Commands {
                    System.out.println(connect.getLogin());
                }
                break;
+           case "discall":
+               broadcaster.disconnectAll();
+               break;
                default:
                    System.out.println("Команда не найдена");
                    break;

@@ -65,5 +65,10 @@ public class Broadcaster {
         }
         return null;
     }
+    public void disconnectAll(){
+        connections.clear();
+        System.out.println("Соединения закрыты");
+        printClients();
+    }
 
 }
