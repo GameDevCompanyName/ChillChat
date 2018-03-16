@@ -13,8 +13,10 @@ public class Commands {
    }
 
     public void invoke(String[] comms) {
+       String template = null;
        switch (comms[0]) {
            case "updateusercolor":
+               template = "Wrong format: /updateusercolor <login> <color>";
                if(comms.length == 3)
                {
                    if(dbConnector.searchForUser(comms[1])){
@@ -22,9 +24,10 @@ public class Commands {
                        Connection conn = broadcaster.getConnectionByLogin(comms[1]);
                        if(conn!=null) {
                            conn.updateColor(Integer.parseInt(comms[2]));
-                           break;
+                           return;
                        }
-                       break;
+                       System.out.println("Не удалось открыть соединение");
+                       return;
                    }
                    else
                        System.out.println(comms[1]+": пользователь не найден!");
@@ -32,11 +35,12 @@ public class Commands {
                }
                break;
            case "updateuserrole":
+               template = "Wrong format: /updateuserrole <login> <role>";
                if(comms.length == 3)
                {
                    if(dbConnector.searchForUser(comms[1])){
                        dbConnector.updateUserRole(comms[1], Integer.parseInt(comms[2]));
-                       break;
+                       return;
                    }
                    else
                        System.out.println(comms[1]+": пользователь не найден!");
@@ -48,19 +52,37 @@ public class Commands {
                if(connections.isEmpty())
                {
                    System.out.println("Никого нет");
-                   break;
+                   return;
                }
                for (Connection connect: connections
                     ) {
                    System.out.println(connect.getLogin());
                }
-               break;
+               return;
            case "discall":
                broadcaster.disconnectAll();
+               return;
+           case "kick":
+               template = "Wrong format: /kick <login> <reason>";
+               if(comms.length == 3){
+                   if(dbConnector.searchForUser(comms[1])){
+                       Connection conn = broadcaster.getConnectionByLogin(comms[1]);
+                       if(conn!=null) {
+                           String kickMsg = comms[1]+" был кикнут сервером по причине: "+comms[2];
+                           Message msg = new Message(kickMsg, "SERVER", 3, 2);
+                           broadcaster.broadcastMessage(msg);
+                           conn.disconnect(comms[2]);
+                           return;
+                       }
+                       System.out.println("Не удалось открыть соединение");
+                       return;
+                   }
+               }
                break;
                default:
-                   System.out.println("Команда не найдена");
+                   template ="Команда не найдена";
                    break;
        }
+       System.out.println(template);
    }
 }

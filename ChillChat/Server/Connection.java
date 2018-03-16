@@ -15,6 +15,8 @@ public class Connection extends Thread {
     private Socket socket;
     private Broadcaster broadcaster;
     private DBConnector dbConnector;
+    boolean clientConnected = true;
+
 
     String name;  //Имя пользователя
     Integer userColor;  //Цвет пользователя
@@ -52,7 +54,10 @@ public class Connection extends Thread {
                 JSONObject loginAttempt = (JSONObject) JSONValue.parse(message);
                 String login = (String) loginAttempt.get("login");
                 String password = (String) loginAttempt.get("password");
-
+                if(broadcaster.getConnectionByLogin(login)!=null){
+                    sendLoginMessage(-2);
+                    continue;
+                }
                 int loginAttemptCode = dbConnector.checkLoginAttempt(login, password);
                 //colorCode > 0 - удачно, пользователь существовал
                 //colorCode > 0 - удачно, новый пользователь
@@ -66,16 +71,20 @@ public class Connection extends Thread {
                 }
 
                 sendLoginMessage(loginAttemptCode);
+                Message msg = new Message(login+" зашел в чат","SERVER", 3, 2);
+                broadcaster.broadcastMessage(msg);
 
             }
 
             broadcaster.connectClient(this);
 
-            boolean clientConnected = true;
 
             while (clientConnected){
 
                 String incomingMessage = in.readLine();
+                if(incomingMessage == null || !clientConnected)
+                    continue;
+
                 JSONObject jsonMessage = (JSONObject) JSONValue.parse(incomingMessage);
 
                 Message message = new Message(
@@ -113,6 +122,12 @@ public class Connection extends Thread {
         out.println(object.toJSONString());
 
     }
+    public void disconnectMessage(String reason){
+        JSONObject object = new JSONObject();
+        object.put("reason", reason);
+        object.put("type", "4");
+        out.println(object.toJSONString());
+    }
     public void updateColor(Integer color)
     {
         userColor = dbConnector.getUserColor(name);
@@ -123,4 +138,9 @@ public class Connection extends Thread {
         return name;
     }
 
+    public void disconnect(String reason) {
+            disconnectMessage(reason);
+            clientConnected = false;
+            this.interrupt();
+    }
 }

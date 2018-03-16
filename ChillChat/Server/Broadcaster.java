@@ -55,17 +55,20 @@ public class Broadcaster {
         return connections;
     }
     public Connection getConnectionByLogin(String login){
-        for (Connection conn: connections
-             ) {
+        for (Connection conn: connections) {
+            if(conn.getLogin()==null)
+                continue;
             if(conn.getLogin().equals(login))
             {
                 return conn;
             }
-            return null;
         }
         return null;
     }
     public void disconnectAll(){
+        for (Connection conn:connections) {
+            conn.disconnect("Сервер закрыл соединение");
+        }
         connections.clear();
         System.out.println("Соединения закрыты");
         printClients();

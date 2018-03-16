@@ -20,7 +20,7 @@ public class CommandLine extends Thread{
 
     @Override
     public void run() {
-        Pattern pattern = Pattern.compile("^/[a-zA-Z0-9_\\s]+$");
+        Pattern pattern = Pattern.compile("^/[a-zа-яА-ЯA-Z0-9_\\s]+$");
         Matcher m;
         while (true){
             text = scanner.nextLine();
@@ -32,7 +32,7 @@ public class CommandLine extends Thread{
 
             }
             else {
-                msg = new Message(text, "SERVER", 3, 1);
+                msg = new Message(text, "SERVER", 3, 2);
                 broadcaster.broadcastMessage(msg);
             }
         }
