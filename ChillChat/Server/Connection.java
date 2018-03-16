@@ -113,5 +113,14 @@ public class Connection extends Thread {
         out.println(object.toJSONString());
 
     }
+    public void updateColor(Integer color)
+    {
+        userColor = dbConnector.getUserColor(name);
+        System.out.println("Цвет пользователя "+name+" изменен на "+userColor.toString());
+    }
+
+    public String getLogin(){
+        return name;
+    }
 
 }

@@ -14,7 +14,7 @@ public class CommandLine extends Thread{
     public  CommandLine(DBConnector dbConnector, Broadcaster broadcaster){
         this.scanner = new Scanner(System.in);
         this.broadcaster = new Broadcaster();
-        this.cmds = new Commands(dbConnector);
+        this.cmds = new Commands(dbConnector, broadcaster);
         this.broadcaster = broadcaster;
     }
 

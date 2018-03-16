@@ -1,12 +1,15 @@
 package ChillChat.Server;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class Commands {
     private DBConnector dbConnector;
-   public Commands(DBConnector dbConnector)
+    private Broadcaster broadcaster;
+   public Commands(DBConnector dbConnector, Broadcaster broadcaster)
    {
        this.dbConnector = dbConnector;
+       this.broadcaster = broadcaster;
    }
 
     public void invoke(String[] comms) {
@@ -16,6 +19,11 @@ public class Commands {
                {
                    if(dbConnector.searchForUser(comms[1])){
                        dbConnector.updateUserColor(comms[1], Integer.parseInt(comms[2]));
+                       Connection conn = broadcaster.getConnectionByLogin(comms[1]);
+                       if(conn!=null) {
+                           conn.updateColor(Integer.parseInt(comms[2]));
+                           break;
+                       }
                        break;
                    }
                    else
@@ -35,6 +43,18 @@ public class Commands {
                     break;
                }
                 break;
+           case "clients":
+               List<Connection> connections = broadcaster.getConnections();
+               if(connections.isEmpty())
+               {
+                   System.out.println("Никого нет");
+                   break;
+               }
+               for (Connection connect: connections
+                    ) {
+                   System.out.println(connect.getLogin());
+               }
+               break;
                default:
                    System.out.println("Команда не найдена");
                    break;

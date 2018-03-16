@@ -38,10 +38,9 @@ public class Broadcaster {
     }
 
     public short broadcastMessage(Message message){
-
+        System.out.println("Broadcaster: Отправляю всем сообщение");
         try {
             for (Connection connection: connections) {
-                System.out.println("Broadcaster: Отправляю всем сообщение");
                 connection.sendMessage(message);
             }
         } catch (Exception e){
@@ -51,6 +50,20 @@ public class Broadcaster {
 
         return 1;
 
+    }
+    public List<Connection> getConnections(){
+        return connections;
+    }
+    public Connection getConnectionByLogin(String login){
+        for (Connection conn: connections
+             ) {
+            if(conn.getLogin().equals(login))
+            {
+                return conn;
+            }
+            return null;
+        }
+        return null;
     }
 
 }

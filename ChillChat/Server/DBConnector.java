@@ -142,6 +142,18 @@ public class DBConnector {
         }
         return false;
     }
+
+    public int getUserColor(String login){
+        String sql = "SELECT color FROM Users WHERE login=?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, login);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.getInt("color");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 2;
+    }
 }
 
 
