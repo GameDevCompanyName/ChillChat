@@ -101,6 +101,8 @@ public class Connection extends Thread {
         } catch (IOException e) {
             System.out.println(name + " разорвал соединение.");
             broadcaster.disconnectClient(this);
+            Message msg = new Message(name+" вышел","SERVER", 3, 2);
+            broadcaster.broadcastMessage(msg);
         }
 
     }
@@ -118,10 +120,12 @@ public class Connection extends Thread {
         object.put("text", message.getText());
         object.put("name", message.getSenderName());
         object.put("color", Integer.toString(message.getColorCode()));
-        object.put("type", "1");
+        object.put("type", Integer.toString(message.getMessageType()));
         out.println(object.toJSONString());
 
     }
+
+
     public void disconnectMessage(String reason){
         JSONObject object = new JSONObject();
         object.put("reason", reason);
