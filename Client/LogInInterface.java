@@ -1,6 +1,6 @@
 package ChillChat.Client;
 
-import ChillChat.Client.Console.ConsoleLogIn;
+import ChillChat.Client.Console.LogInProcedure;
 import ChillChat.Client.Utilites.Constants;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -15,7 +15,7 @@ import javafx.scene.text.Font;
 
 public class LogInInterface {
 
-    private ConsoleLogIn logIn;
+    private LogInProcedure logIn;
 
     StackPane interfacePane;
     VBox box;
@@ -31,7 +31,7 @@ public class LogInInterface {
 
     private ClientWindow clientWindow;
 
-    public LogInInterface(ClientWindow clientWindow, StackPane parentPane, ConsoleLogIn logIn) {
+    public LogInInterface(ClientWindow clientWindow, StackPane parentPane, LogInProcedure logIn) {
 
         this.clientWindow = clientWindow;
         this.logIn = logIn;
@@ -134,4 +134,5 @@ public class LogInInterface {
     public void userAlreadyExists() {
         loginState.setText("Юзер с таким логином\nуже подключен");
     }
+
 }

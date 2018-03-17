@@ -2,14 +2,14 @@ package ChillChat.Client.Console;
 
 import ChillChat.Client.LogInInterface;
 
-public class ConsoleLogIn {
+public class LogInProcedure {
 
     LogInInterface logInInterface;
     ConsoleClient consoleClient;
 
     int color;
 
-    public ConsoleLogIn(ConsoleClient client) {
+    public LogInProcedure(ConsoleClient client) {
         this.consoleClient = client;
     }
 
@@ -34,6 +34,7 @@ public class ConsoleLogIn {
 
         if (response.equals("-2")) {
             logInInterface.userAlreadyExists();
+            return;
         }
 
         color = Integer.parseInt(response);

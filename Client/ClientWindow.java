@@ -69,11 +69,6 @@ public class ClientWindow {
 
         StackPane centralPane = new StackPane();
 
-        centralPane.prefWidthProperty().bind(clientScene.widthProperty());
-        centralPane.prefHeightProperty().bind(clientScene.heightProperty());
-        centralPane.maxWidthProperty().bind(clientScene.widthProperty());
-        centralPane.maxHeightProperty().bind(clientScene.heightProperty());
-
         centralPane.getChildren().add(logoImage);
         centralPane.setAlignment(logoImage, Pos.CENTER);
 
@@ -97,6 +92,11 @@ public class ClientWindow {
         });
 
         totalGroup.getChildren().add(centralPane);
+
+        centralPane.prefWidthProperty().bind(clientScene.widthProperty());
+        centralPane.prefHeightProperty().bind(clientScene.heightProperty());
+        centralPane.maxWidthProperty().bind(clientScene.widthProperty());
+        centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
         fadeIn.play();
 
@@ -143,6 +143,11 @@ public class ClientWindow {
         backFadeIn.setFromValue(0);
         backFadeIn.setToValue(1);
 
+        centralPane.prefWidthProperty().bind(clientScene.widthProperty());
+        centralPane.prefHeightProperty().bind(clientScene.heightProperty());
+        centralPane.maxWidthProperty().bind(clientScene.widthProperty());
+        centralPane.maxHeightProperty().bind(clientScene.heightProperty());
+
         backFadeIn.play();
         fadeIn.play();
 
@@ -188,4 +193,5 @@ public class ClientWindow {
         if (messenger != null)
             messenger.displayServerMessage(text);
     }
+
 }

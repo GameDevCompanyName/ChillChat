@@ -15,14 +15,13 @@ public class ConsoleClient extends Thread {
 
     BufferedReader in;
     PrintWriter out;
-    ConsoleResender resender;
-    ConsoleLogIn logIn;
+    Resender resender;
+    LogInProcedure logIn;
     ClientWindow clientWindow;
-
-    String name;
 
     public ConsoleClient(ClientWindow clientWindow) {
         this.clientWindow = clientWindow;
+        logIn = new LogInProcedure(this);
     }
 
     @Override
@@ -30,13 +29,10 @@ public class ConsoleClient extends Thread {
 
         try {
             socket = new Socket(IP, PORT);
+            initStreams();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        logIn = new ConsoleLogIn(this);
-
-        initStreams();
 
     }
 
@@ -51,7 +47,7 @@ public class ConsoleClient extends Thread {
         try{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
             out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8")), true);
-            resender = new ConsoleResender(in, logIn, clientWindow);
+            resender = new Resender(in, logIn, clientWindow);
             resender.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,7 +55,7 @@ public class ConsoleClient extends Thread {
 
     }
 
-    public ConsoleLogIn getLogIn() {
+    public LogInProcedure getLogIn() {
         return logIn;
     }
 
@@ -68,12 +64,14 @@ public class ConsoleClient extends Thread {
     }
 
     public void closeAllThreads() {
-        resender.setStop();
         try {
-            socket.close();
+            if (socket != null)
+                socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (resender != null)
+            resender.setStop();
         System.exit(1);
     }
 

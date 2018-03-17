@@ -2,7 +2,7 @@ package ChillChat.Client.Utilites;
 
 public class Constants {
 
-    public static final String IP = "138.68.74.16";
+    public static final String IP = "18.68.74.16";
     public static final int PORT = 1488;
 
     //at default
