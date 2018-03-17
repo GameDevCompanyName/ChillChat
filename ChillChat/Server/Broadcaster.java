@@ -1,6 +1,7 @@
 package ChillChat.Server;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Broadcaster {
@@ -66,8 +67,12 @@ public class Broadcaster {
         return null;
     }
     public void disconnectAll(){
-        for (Connection conn:connections) {
-            conn.disconnect("Сервер закрыл соединение");
+
+        Iterator<Connection> i = connections.iterator();
+        while (i.hasNext()) {
+            Connection value = i.next();
+            value.disconnect("Сервер закрыл соединение");
+            i.remove();
         }
         connections.clear();
         System.out.println("Соединения закрыты");

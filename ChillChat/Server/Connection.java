@@ -145,6 +145,11 @@ public class Connection extends Thread {
     public void disconnect(String reason) {
             disconnectMessage(reason);
             clientConnected = false;
-            this.interrupt();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.interrupt();
     }
 }
