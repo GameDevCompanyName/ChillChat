@@ -21,6 +21,7 @@ public class Connection extends Thread {
     String name;  //Имя пользователя
     Integer userColor;  //Цвет пользователя
 
+
     public Connection(Socket socket, Broadcaster broadcaster, DBConnector dbConnector) {
 
         this.broadcaster = broadcaster;
