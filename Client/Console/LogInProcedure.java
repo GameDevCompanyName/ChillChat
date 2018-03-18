@@ -18,6 +18,10 @@ public class LogInProcedure {
     }
 
     private void sendLogInAttempt(String login, String pass) {
+        if (consoleClient.out == null){
+            logInInterface.serverIsUnavalable();
+            return;
+        }
         consoleClient.out.println(JsonHandler.getString(login, pass));
     }
 

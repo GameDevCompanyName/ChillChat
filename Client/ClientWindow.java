@@ -6,7 +6,6 @@ import ChillChat.Client.Utilites.Utils;
 import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,6 +22,7 @@ import static ChillChat.Client.Utilites.Constants.*;
 
 public class ClientWindow {
 
+    private final Client client;
     private final Stage clientStage;
     private final Scene clientScene;
     private final Group totalGroup;
@@ -32,11 +32,13 @@ public class ClientWindow {
 
     private MusicPlayer musicPlayer;
 
-    private Node activeNode;
+    private StackPane activeNode;
+    private LogInInterface logInInterface;
 
 
-    public ClientWindow(Stage primaryStage) {
+    public ClientWindow(Client client, Stage primaryStage) {
 
+        this.client = client;
         clientStage = primaryStage;
         totalGroup = new Group();
         clientScene = new Scene(totalGroup,
@@ -88,7 +90,7 @@ public class ClientWindow {
         stay.setOnFinished(e -> fadeOut.play());
         fadeOut.setOnFinished(e -> {
             centralPane.getChildren().remove(logoImage);
-            launchLogIn(centralPane);
+            launchLogIn(centralPane, false);
         });
 
         totalGroup.getChildren().add(centralPane);
@@ -102,7 +104,10 @@ public class ClientWindow {
 
     }
 
-    private void launchLogIn(StackPane centralPane) {
+    private void launchLogIn(StackPane centralPane, boolean connectionError) {
+
+        centralPane.getChildren().clear();
+        centralPane.setOpacity(1);
 
         ImageView background = new ImageView(Utils.getRandomLogInBackground());
         double scaleCoef = (350*500)/background.getImage().getWidth();
@@ -111,9 +116,9 @@ public class ClientWindow {
         background.setOpacity(0);
 
         consoleClient = new ConsoleClient(this);
-        consoleClient.start();
 
         LogInInterface logInInterface = new LogInInterface(this, centralPane, consoleClient.getLogIn());
+        this.logInInterface = logInInterface;
         Pane logInBox = logInInterface.getContainer();
         logInBox.setOpacity(0);
 
@@ -151,9 +156,14 @@ public class ClientWindow {
         backFadeIn.play();
         fadeIn.play();
 
+        if (connectionError)
+            logInInterface.serverIsUnavalable();
+
     }
 
     public void loggedIn() {
+
+        //this.logInInterface = null;
 
         FadeTransition fadeOut = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
         fadeOut.setFromValue(1);
@@ -174,7 +184,7 @@ public class ClientWindow {
         centralPane.maxWidthProperty().bind(clientScene.widthProperty());
         centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
-        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, consoleClient.getColor());
+        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, consoleClient.getColor(), client);
         this.messenger = messenger;
 
         totalGroup.getChildren().remove(activeNode);
@@ -192,6 +202,62 @@ public class ClientWindow {
     public void displayServerMessage(String text) {
         if (messenger != null)
             messenger.displayServerMessage(text);
+    }
+
+    public void inputStreamProblem() {
+        connectionProblem();
+    }
+
+    private void connectionProblem() {
+        goToLoginScreen(true);
+    }
+
+    private void goToLoginScreen(boolean becauseOfError) {
+        closeConnection();
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.play();
+        fadeOut.setOnFinished(e -> {
+            launchLogIn(activeNode, becauseOfError);
+        });
+    }
+
+    private void closeConnection() {
+        consoleClient.closeAllThreads();
+    }
+
+    private void fadeOut() {
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.play();
+    }
+
+    private void fadeIn() {
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+    }
+
+    public void outputStreamError() {
+        connectionProblem();
+    }
+
+    public void startConsoleClient() {
+        if (!consoleClient.isInitiated())
+            consoleClient.start();
+    }
+
+    public void unableToConnect() {
+        reconnect();
+    }
+
+    private void reconnect() {
+        consoleClient = new ConsoleClient(this);
+        logInInterface.updateConsoleClient(consoleClient);
+        consoleClient.getLogIn().setLogInInterface(logInInterface);
     }
 
 }

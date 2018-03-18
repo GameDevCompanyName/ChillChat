@@ -13,7 +13,7 @@ public class Client extends Application {
         primaryStage.setHeight(600);
         primaryStage.show();
 
-        ClientWindow clientWindow = new ClientWindow(primaryStage);
+        ClientWindow clientWindow = new ClientWindow(this, primaryStage);
 
         clientWindow.launch();
 

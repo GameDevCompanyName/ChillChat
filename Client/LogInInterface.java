@@ -1,5 +1,6 @@
 package ChillChat.Client;
 
+import ChillChat.Client.Console.ConsoleClient;
 import ChillChat.Client.Console.LogInProcedure;
 import ChillChat.Client.Utilites.Constants;
 import javafx.geometry.Pos;
@@ -83,7 +84,6 @@ public class LogInInterface {
         if (Constants.DEBUG){
             interfacePane.setStyle("-fx-border-color: red");
             box.setStyle("-fx-border-color: blue");
-
         }
 
     }
@@ -107,6 +107,8 @@ public class LogInInterface {
     }
 
     public void tryToLogIn(){
+
+        clientWindow.startConsoleClient();
 
         if (passwordField.getText().isEmpty() || loginField.getText().isEmpty()){
             wrongInput();
@@ -133,6 +135,14 @@ public class LogInInterface {
 
     public void userAlreadyExists() {
         loginState.setText("Юзер с таким логином\nуже подключен");
+    }
+
+    public void serverIsUnavalable() {
+        loginState.setText("Сервер недоступен.");
+    }
+
+    public void updateConsoleClient(ConsoleClient consoleClient) {
+        this.logIn = consoleClient.getLogIn();
     }
 
 }

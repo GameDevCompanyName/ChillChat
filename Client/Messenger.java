@@ -1,7 +1,6 @@
 package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleClient;
-import ChillChat.Client.Console.JsonHandler;
 import ChillChat.Client.Utilites.Constants;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -24,7 +23,7 @@ public class Messenger {
     TextField inputField;
 
 
-    public Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Integer color) {
+    public Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Integer color, Client client) {
 
         this.clientScene = clientScene;
 
@@ -56,6 +55,25 @@ public class Messenger {
         inputField = new TextField();
         inputField.setFont(new Font("Courier New", 16));
 
+        changeInterfaceColor(color);
+
+        inputField.prefWidthProperty().bind(centralPane.widthProperty());
+
+        consolePane.prefHeightProperty().bind(messengerBox.heightProperty().subtract(inputField.heightProperty()));
+        consolePane.maxHeightProperty().bind(messengerBox.heightProperty().subtract(inputField.heightProperty()));
+        consolePane.prefWidthProperty().bind(messengerBox.widthProperty());
+        consolePane.maxWidthProperty().bind(messengerBox.widthProperty());
+
+        console = new CustomConsole(consolePane, client);
+
+        consolePane.getChildren().add(console.getBox());
+
+        messengerBox.getChildren().addAll(consolePane, inputField);
+
+    }
+
+    private void changeInterfaceColor(Integer color) {
+
         switch (color){
             case 1:
                 inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: Crimson;");
@@ -83,24 +101,19 @@ public class Messenger {
                 break;
         }
 
-        inputField.prefWidthProperty().bind(centralPane.widthProperty());
-
-        consolePane.prefHeightProperty().bind(messengerBox.heightProperty().subtract(inputField.heightProperty()));
-        consolePane.maxHeightProperty().bind(messengerBox.heightProperty().subtract(inputField.heightProperty()));
-        consolePane.prefWidthProperty().bind(messengerBox.widthProperty());
-        consolePane.maxWidthProperty().bind(messengerBox.widthProperty());
-
-        console = new CustomConsole(consolePane);
-
-        consolePane.getChildren().add(console.getBox());
-
-
-        messengerBox.getChildren().addAll(consolePane, inputField);
-
     }
 
     private void flushTextFromField() {
-        sendMessage(inputField.getText());
+
+        String text = inputField.getText();
+
+        if (text.isEmpty())
+            return;
+        if (text.length() > 255)
+            sendMessage(text.substring(0, 255));
+        else
+            sendMessage(inputField.getText());
+
         inputField.setText("");
     }
 
@@ -113,7 +126,7 @@ public class Messenger {
     }
 
     private void sendMessage(String text) {
-        consoleClient.sendMessage(JsonHandler.getString(text));
+        consoleClient.sendMessage(text);
     }
 
     public void displayServerMessage(String text) {

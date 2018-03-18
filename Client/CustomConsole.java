@@ -1,8 +1,12 @@
 package ChillChat.Client;
 
-import javafx.animation.*;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
@@ -16,12 +20,14 @@ import static ChillChat.Client.Utilites.Constants.DEBUG;
 
 public class CustomConsole {
 
+    Client client;
     StackPane mainBox;
     ScrollPane scrollPane;
     VBox textBox;
 
-    public CustomConsole(StackPane parentPane){
+    public CustomConsole(StackPane parentPane, Client client){
 
+        this.client = client;
         mainBox = new StackPane();
         textBox = new VBox();
         scrollPane = new ScrollPane();
@@ -70,11 +76,6 @@ public class CustomConsole {
         t1.setFont(textFont);
         t1.setText(name + ": ");
 
-        Text t2 = new Text();
-        t2.setStyle("-fx-fill: Lavender;");
-        t2.setText(text);
-        t2.setFont(textFont);
-
         switch (color){
             case 1:
                 t1.setStyle("-fx-fill: Crimson;");
@@ -102,14 +103,52 @@ public class CustomConsole {
                 break;
         }
 
-        flow.getChildren().addAll(t1, t2);
+        flow.getChildren().addAll(t1);
+        //flow.prefWidthProperty().bind(mainBox.widthProperty());
+
+        String[] parsedText = text.split(" ");
+        StringBuilder buffer = new StringBuilder();
+        for (int i = 0; i < parsedText.length; i++){
+            String word = parsedText[i];
+            if (word.contains("www.") || word.contains("https://") || word.contains("http://")){
+
+                Text bufferedText = new Text();
+                bufferedText.setStyle("-fx-fill: Lavender;");
+                bufferedText.setText(buffer.toString());
+                bufferedText.setFont(textFont);
+                flow.getChildren().add(bufferedText);
+                buffer = new StringBuilder();
+
+                Hyperlink link = new Hyperlink(word);
+                link.setOnAction(event -> client.getHostServices().showDocument(word));
+                System.out.println(link);
+                link.setStyle("-fx-fill: Pink;");
+                link.setFont(textFont);
+                flow.getChildren().add(new TextFlow(link));
+
+
+            } else {
+                buffer.append(word);
+                if (i != parsedText.length - 1)
+                    buffer.append(" ");
+            }
+        }
+
+        if (buffer.length() != 0){
+            Text bufferedText = new Text();
+            bufferedText.setStyle("-fx-fill: Lavender;");
+            bufferedText.setText(buffer.toString());
+            bufferedText.setFont(textFont);
+            flow.getChildren().add(bufferedText);
+        }
+
         flow.setOpacity(0.0);
 
         textBox.getChildren().add(flow);
 
         Timeline shutUpAnimation = new Timeline();
         shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(flow.opacityProperty(), 0)));
-        shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.6), new KeyValue(flow.opacityProperty(), 1)));
+        shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.5), new KeyValue(flow.opacityProperty(), 1)));
         shutUpAnimation.play();
 
         slowScrollToBottom();
@@ -133,6 +172,9 @@ public class CustomConsole {
         flow.getChildren().add(t1);
         textBox.getChildren().add(flow);
 
+        slowScrollToBottom();
+
     }
+
 }
 

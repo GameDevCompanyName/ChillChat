@@ -19,6 +19,8 @@ public class ConsoleClient extends Thread {
     LogInProcedure logIn;
     ClientWindow clientWindow;
 
+    boolean initiated = false;
+
     public ConsoleClient(ClientWindow clientWindow) {
         this.clientWindow = clientWindow;
         logIn = new LogInProcedure(this);
@@ -27,10 +29,13 @@ public class ConsoleClient extends Thread {
     @Override
     public void start(){
 
+        initiated = true;
+
         try {
             socket = new Socket(IP, PORT);
             initStreams();
         } catch (IOException e) {
+            clientWindow.unableToConnect();
             e.printStackTrace();
         }
 
@@ -50,6 +55,7 @@ public class ConsoleClient extends Thread {
             resender = new Resender(in, logIn, clientWindow);
             resender.start();
         } catch (Exception e) {
+            clientWindow.unableToConnect();
             e.printStackTrace();
         }
 
@@ -59,8 +65,14 @@ public class ConsoleClient extends Thread {
         return logIn;
     }
 
-    public void sendMessage(String formedMessage){
-        out.println(formedMessage);
+    public void sendMessage(String message){
+
+        out.println(JsonHandler.getString(message));
+
+    }
+
+    public boolean isInitiated(){
+        return initiated;
     }
 
     public void closeAllThreads() {
@@ -72,10 +84,11 @@ public class ConsoleClient extends Thread {
         }
         if (resender != null)
             resender.setStop();
-        System.exit(1);
+        this.interrupt();
     }
 
     public Integer getColor() {
         return logIn.getColor();
     }
+
 }

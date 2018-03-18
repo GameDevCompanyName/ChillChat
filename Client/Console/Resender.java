@@ -24,7 +24,7 @@ class Resender extends Thread {
 
     public void setStop() {
         stoped = true;
-        System.exit(1);
+        this.interrupt();
     }
 
     @Override
@@ -68,8 +68,7 @@ class Resender extends Thread {
             }
 
         } catch (IOException e) {
-            System.err.println("Ошибка при получении сообщения.");
-            e.printStackTrace();
+            clientWindow.inputStreamProblem();
         }
     }
 
