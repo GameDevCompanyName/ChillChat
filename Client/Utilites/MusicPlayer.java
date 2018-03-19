@@ -9,6 +9,8 @@ import javafx.util.Duration;
 
 import java.io.File;
 
+import static ChillChat.Client.Utilites.Constants.MUSIC_VOLUME;
+import static ChillChat.Client.Utilites.Constants.PLAY_MUSIC;
 import static ChillChat.Client.Utilites.Constants.PLAY_MUSIC_ON_START;
 
 public class MusicPlayer extends Thread{
@@ -19,7 +21,8 @@ public class MusicPlayer extends Thread{
     public MusicPlayer() {
         String uriString = new File("resources/music/ss13theme.mp3").toURI().toString();
         soundPlayer = new MediaPlayer(new Media(uriString));
-        soundPlayer.setVolume(0.05);
+        soundPlayer.setVolume(MUSIC_VOLUME);
+        soundPlayer.setCycleCount(MediaPlayer.INDEFINITE);
     }
 
     @Override
@@ -31,9 +34,25 @@ public class MusicPlayer extends Thread{
     }
 
     public void slowShutUp() {
-        Timeline shutUpAnimation = new Timeline();
-        shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(soundPlayer.volumeProperty(), soundPlayer.getVolume())));
-        shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(5.0), new KeyValue(soundPlayer.volumeProperty(), 0)));
-        shutUpAnimation.play();
+        if (PLAY_MUSIC){
+            Timeline shutUpAnimation = new Timeline();
+            shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(soundPlayer.volumeProperty(), soundPlayer.getVolume())));
+            shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(4.0), new KeyValue(soundPlayer.volumeProperty(), 0)));
+            shutUpAnimation.play();
+            shutUpAnimation.setOnFinished(e -> {
+                soundPlayer.stop();
+            });
+        }
+
+    }
+
+    public void slowPlayFromStart() {
+        if (PLAY_MUSIC){
+            soundPlayer.play();
+            Timeline shutUpAnimation = new Timeline();
+            shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(soundPlayer.volumeProperty(), soundPlayer.getVolume())));
+            shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(3.0), new KeyValue(soundPlayer.volumeProperty(), MUSIC_VOLUME)));
+            shutUpAnimation.play();
+        }
     }
 }

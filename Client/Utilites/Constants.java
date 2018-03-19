@@ -12,8 +12,10 @@ public class Constants {
     public final static Double LOGO_SHOW_TIME = 2.0;
     public final static Double LOGIN_FADE_TIME = 1.5;
 
-    public final static Boolean DEBUG = false;
-    public final static Boolean PLAY_MUSIC_ON_START = true;
+    public static Boolean DEBUG = false;
+    public static Boolean PLAY_MUSIC_ON_START = true;
+    public static Boolean PLAY_MUSIC = true;
+    public static double MUSIC_VOLUME = 0.05;
 
 
 

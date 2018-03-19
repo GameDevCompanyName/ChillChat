@@ -15,16 +15,18 @@ import javafx.scene.text.Font;
 public class Messenger {
 
     Scene clientScene;
-
     ConsoleClient consoleClient;
+    ClientWindow clientWindow;
+
     VBox messengerBox;
 
     CustomConsole console;
     TextField inputField;
 
 
-    public Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Integer color, Client client) {
+    public Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Integer color, Client client, ClientWindow clientWindow) {
 
+        this.clientWindow = clientWindow;
         this.clientScene = clientScene;
 
         clientScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -32,6 +34,10 @@ public class Messenger {
             public void handle(KeyEvent event) {
                 if (event.getCode().equals(KeyCode.ENTER)){
                     flushTextFromField();
+                }
+
+                if (event.getCode().equals(KeyCode.ESCAPE)){
+                    clientWindow.goToLoginScreen(false);
                 }
             }
         });

@@ -156,8 +156,11 @@ public class ClientWindow {
         backFadeIn.play();
         fadeIn.play();
 
-        if (connectionError)
+        if (connectionError) {
             logInInterface.serverIsUnavalable();
+            musicPlayer.slowPlayFromStart();
+        }
+
 
     }
 
@@ -184,7 +187,7 @@ public class ClientWindow {
         centralPane.maxWidthProperty().bind(clientScene.widthProperty());
         centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
-        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, consoleClient.getColor(), client);
+        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, consoleClient.getColor(), client, this);
         this.messenger = messenger;
 
         totalGroup.getChildren().remove(activeNode);
@@ -212,7 +215,7 @@ public class ClientWindow {
         goToLoginScreen(true);
     }
 
-    private void goToLoginScreen(boolean becauseOfError) {
+    public void goToLoginScreen(boolean becauseOfError) {
         closeConnection();
         FadeTransition fadeOut = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
         fadeOut.setFromValue(1);
