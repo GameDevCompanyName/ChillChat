@@ -2,16 +2,16 @@ package ChillChat.Client.Console;
 
 import org.json.simple.JSONObject;
 
-public class JsonHandler {
+class JsonHandler {
 
-    public static String getString(String login, String pass) {
+    static String getString(String login, String pass) {
         JSONObject object = new JSONObject();
         object.put("login", login);
         object.put("password", pass);
         return object.toJSONString();
     }
 
-    public static String getString(String text) {
+    static String getString(String text) {
         JSONObject object = new JSONObject();
         object.put("text", text);
         return object.toJSONString();

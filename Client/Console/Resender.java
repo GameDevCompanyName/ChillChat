@@ -16,13 +16,13 @@ class Resender extends Thread {
     private LogInProcedure logIn;
     private ClientWindow clientWindow;
 
-    public Resender(BufferedReader in, LogInProcedure logIn, ClientWindow clientWindow) {
+    Resender(BufferedReader in, LogInProcedure logIn, ClientWindow clientWindow) {
         this.in = in;
         this.logIn = logIn;
         this.clientWindow = clientWindow;
     }
 
-    public void setStop() {
+    void setStop() {
         stoped = true;
         this.interrupt();
     }
@@ -36,33 +36,30 @@ class Resender extends Thread {
 
                 JSONObject message = (JSONObject) JSONValue.parse(str);
 
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
+                Platform.runLater(() -> {
 
-                        if (message.get("type").equals("1")){
-                            String name = message.get("name").toString();
-                            String text = message.get("text").toString();
-                            Integer color = Integer.parseInt(message.get("color").toString());
-                            clientWindow.displayMessage(name, text, color);
-                        }
-
-                        if (message.get("type").equals("2")){
-                            String text = message.get("text").toString();
-                            clientWindow.displayServerMessage(text);
-                        }
-
-                        if (message.get("type").equals("3")){
-                            logIn.serverAnswer(message.get("response").toString());
-                        }
-
-                        if (message.get("type").equals("4")){
-                            String reason = message.get("reason").toString();
-                            clientWindow.displayServerMessage("Вы были отключены от сервера. Причина:");
-                            clientWindow.displayServerMessage(reason);
-                        }
-
+                    if (message.get("type").equals("1")){
+                        String name = message.get("name").toString();
+                        String text = message.get("text").toString();
+                        Integer color = Integer.parseInt(message.get("color").toString());
+                        clientWindow.displayMessage(name, text, color);
                     }
+
+                    if (message.get("type").equals("2")){
+                        String text = message.get("text").toString();
+                        clientWindow.displayServerMessage(text);
+                    }
+
+                    if (message.get("type").equals("3")){
+                        logIn.serverAnswer(message.get("response").toString());
+                    }
+
+                    if (message.get("type").equals("4")){
+                        String reason = message.get("reason").toString();
+                        clientWindow.displayServerMessage("Вы были отключены от сервера. Причина:");
+                        clientWindow.displayServerMessage(reason);
+                    }
+
                 });
 
             }

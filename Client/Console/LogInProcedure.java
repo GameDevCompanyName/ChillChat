@@ -4,12 +4,12 @@ import ChillChat.Client.LogInInterface;
 
 public class LogInProcedure {
 
-    LogInInterface logInInterface;
-    ConsoleClient consoleClient;
+    private LogInInterface logInInterface;
+    private ConsoleClient consoleClient;
 
-    int color;
+    private int color;
 
-    public LogInProcedure(ConsoleClient client) {
+    LogInProcedure(ConsoleClient client) {
         this.consoleClient = client;
     }
 
@@ -18,18 +18,18 @@ public class LogInProcedure {
     }
 
     private void sendLogInAttempt(String login, String pass) {
-        if (consoleClient.out == null){
+        if (consoleClient.getOut() == null){
             logInInterface.serverIsUnavalable();
             return;
         }
-        consoleClient.out.println(JsonHandler.getString(login, pass));
+        consoleClient.getOut().println(JsonHandler.getString(login, pass));
     }
 
     public void setLogInInterface(LogInInterface inInterface){
         logInInterface = inInterface;
     }
 
-    public void serverAnswer(String response){
+    void serverAnswer(String response){
 
         if (response.equals("-1")){
             logInInterface.wrongPass();
@@ -48,7 +48,7 @@ public class LogInProcedure {
     }
 
 
-    public Integer getColor() {
+    Integer getColor() {
         return color;
     }
 }

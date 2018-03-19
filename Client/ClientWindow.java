@@ -36,7 +36,7 @@ public class ClientWindow {
     private LogInInterface logInInterface;
 
 
-    public ClientWindow(Client client, Stage primaryStage) {
+    ClientWindow(Client client, Stage primaryStage) {
 
         this.client = client;
         clientStage = primaryStage;
@@ -61,7 +61,7 @@ public class ClientWindow {
         System.exit(1);
     }
 
-    public void launch() {
+    void launch() {
 
         ImageView logoImage = new ImageView(new Image(new File("resources/images/logo.png").toURI().toString()));
 
@@ -72,7 +72,7 @@ public class ClientWindow {
         StackPane centralPane = new StackPane();
 
         centralPane.getChildren().add(logoImage);
-        centralPane.setAlignment(logoImage, Pos.CENTER);
+        StackPane.setAlignment(logoImage, Pos.CENTER);
 
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(LOGO_SHOW_TIME * 0.2), logoImage);
         fadeIn.setFromValue(0);
@@ -137,8 +137,8 @@ public class ClientWindow {
 
         centralPane.getChildren().addAll(background, logInBox);
 
-        centralPane.setAlignment(logInBox, Pos.CENTER);
-        centralPane.setAlignment(background, Pos.CENTER);
+        StackPane.setAlignment(logInBox, Pos.CENTER);
+        StackPane.setAlignment(background, Pos.CENTER);
 
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), logInBox);
         fadeIn.setFromValue(0);
@@ -164,7 +164,7 @@ public class ClientWindow {
 
     }
 
-    public void loggedIn() {
+    void loggedIn() {
 
         //this.logInInterface = null;
 
@@ -215,15 +215,13 @@ public class ClientWindow {
         goToLoginScreen(true);
     }
 
-    public void goToLoginScreen(boolean becauseOfError) {
+    void goToLoginScreen(boolean becauseOfError) {
         closeConnection();
         FadeTransition fadeOut = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
         fadeOut.play();
-        fadeOut.setOnFinished(e -> {
-            launchLogIn(activeNode, becauseOfError);
-        });
+        fadeOut.setOnFinished(e -> launchLogIn(activeNode, becauseOfError));
     }
 
     private void closeConnection() {
@@ -248,7 +246,7 @@ public class ClientWindow {
         connectionProblem();
     }
 
-    public void startConsoleClient() {
+    void startConsoleClient() {
         if (!consoleClient.isInitiated())
             consoleClient.start();
     }

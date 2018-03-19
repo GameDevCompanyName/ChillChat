@@ -18,14 +18,14 @@ import javafx.util.Duration;
 
 import static ChillChat.Client.Utilites.Constants.DEBUG;
 
-public class CustomConsole {
+class CustomConsole {
 
-    Client client;
-    StackPane mainBox;
-    ScrollPane scrollPane;
-    VBox textBox;
+    private Client client;
+    private StackPane mainBox;
+    private ScrollPane scrollPane;
+    private VBox textBox;
 
-    public CustomConsole(StackPane parentPane, Client client){
+    CustomConsole(StackPane parentPane, Client client){
 
         this.client = client;
         mainBox = new StackPane();
@@ -67,7 +67,7 @@ public class CustomConsole {
         animation.play();
     }
 
-    public void textAppend(String name, String text, Integer color){
+    void textAppend(String name, String text, Integer color){
 
         TextFlow flow = new TextFlow();
         Font textFont = new Font("Courier New", 18);
@@ -155,11 +155,11 @@ public class CustomConsole {
 
     }
 
-    public Node getBox() {
+    Node getBox() {
         return mainBox;
     }
 
-    public void serverMessageAppend(String text) {
+    void serverMessageAppend(String text) {
 
         TextFlow flow = new TextFlow();
         Font textFont = new Font("Courier New", 20);

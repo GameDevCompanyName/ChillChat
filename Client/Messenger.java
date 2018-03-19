@@ -2,43 +2,38 @@ package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleClient;
 import ChillChat.Client.Utilites.Constants;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-public class Messenger {
+class Messenger {
 
-    Scene clientScene;
-    ConsoleClient consoleClient;
-    ClientWindow clientWindow;
+    private Scene clientScene;
+    private ConsoleClient consoleClient;
+    private ClientWindow clientWindow;
 
-    VBox messengerBox;
+    private VBox messengerBox;
 
-    CustomConsole console;
-    TextField inputField;
+    private CustomConsole console;
+    private TextField inputField;
 
 
-    public Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Integer color, Client client, ClientWindow clientWindow) {
+    Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Integer color, Client client, ClientWindow clientWindow) {
 
         this.clientWindow = clientWindow;
         this.clientScene = clientScene;
 
-        clientScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if (event.getCode().equals(KeyCode.ENTER)){
-                    flushTextFromField();
-                }
+        clientScene.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)){
+                flushTextFromField();
+            }
 
-                if (event.getCode().equals(KeyCode.ESCAPE)){
-                    clientWindow.goToLoginScreen(false);
-                }
+            if (event.getCode().equals(KeyCode.ESCAPE)){
+                clientWindow.goToLoginScreen(false);
             }
         });
 
@@ -123,11 +118,11 @@ public class Messenger {
         inputField.setText("");
     }
 
-    public Node getContainer() {
+    Node getContainer() {
         return messengerBox;
     }
 
-    public void displayMessage(String name, String text, Integer color) {
+    void displayMessage(String name, String text, Integer color) {
         console.textAppend(name, text, color);
     }
 
@@ -135,7 +130,7 @@ public class Messenger {
         consoleClient.sendMessage(text);
     }
 
-    public void displayServerMessage(String text) {
+    void displayServerMessage(String text) {
         console.serverMessageAppend(text);
     }
 

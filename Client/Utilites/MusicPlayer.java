@@ -39,9 +39,7 @@ public class MusicPlayer extends Thread{
             shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(soundPlayer.volumeProperty(), soundPlayer.getVolume())));
             shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(4.0), new KeyValue(soundPlayer.volumeProperty(), 0)));
             shutUpAnimation.play();
-            shutUpAnimation.setOnFinished(e -> {
-                soundPlayer.stop();
-            });
+            shutUpAnimation.setOnFinished(e -> soundPlayer.stop());
         }
 
     }

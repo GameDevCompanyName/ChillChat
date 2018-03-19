@@ -18,8 +18,8 @@ public class LogInInterface {
 
     private LogInProcedure logIn;
 
-    StackPane interfacePane;
-    VBox box;
+    private StackPane interfacePane;
+    private VBox box;
     private TextField loginField;
     private PasswordField passwordField;
     private Button acceptButton;
@@ -32,7 +32,7 @@ public class LogInInterface {
 
     private ClientWindow clientWindow;
 
-    public LogInInterface(ClientWindow clientWindow, StackPane parentPane, LogInProcedure logIn) {
+    LogInInterface(ClientWindow clientWindow, StackPane parentPane, LogInProcedure logIn) {
 
         this.clientWindow = clientWindow;
         this.logIn = logIn;
@@ -79,7 +79,7 @@ public class LogInInterface {
 
 
         interfacePane.getChildren().add(box);
-        interfacePane.setAlignment(box, Pos.CENTER);
+        StackPane.setAlignment(box, Pos.CENTER);
 
         if (Constants.DEBUG){
             interfacePane.setStyle("-fx-border-color: red");
@@ -88,11 +88,11 @@ public class LogInInterface {
 
     }
 
-    public Pane getContainer() {
+    Pane getContainer() {
         return interfacePane;
     }
 
-    public void setTextColor(Color color){
+    void setTextColor(Color color){
         titleText.setTextFill(color);
         inputLogin.setTextFill(color);
         inputPassword.setTextFill(color);
@@ -106,7 +106,7 @@ public class LogInInterface {
         clientWindow.loggedIn();
     }
 
-    public void tryToLogIn(){
+    private void tryToLogIn(){
 
         clientWindow.startConsoleClient();
 
@@ -141,7 +141,7 @@ public class LogInInterface {
         loginState.setText("Сервер недоступен.");
     }
 
-    public void updateConsoleClient(ConsoleClient consoleClient) {
+    void updateConsoleClient(ConsoleClient consoleClient) {
         this.logIn = consoleClient.getLogIn();
     }
 

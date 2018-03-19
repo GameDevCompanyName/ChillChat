@@ -13,13 +13,13 @@ public class ConsoleClient extends Thread {
 
     private Socket socket;
 
-    BufferedReader in;
-    PrintWriter out;
-    Resender resender;
-    LogInProcedure logIn;
-    ClientWindow clientWindow;
+    private BufferedReader in;
+    private PrintWriter out;
+    private Resender resender;
+    private LogInProcedure logIn;
+    private ClientWindow clientWindow;
 
-    boolean initiated = false;
+    private boolean initiated = false;
 
     public ConsoleClient(ClientWindow clientWindow) {
         this.clientWindow = clientWindow;
@@ -91,4 +91,7 @@ public class ConsoleClient extends Thread {
         return logIn.getColor();
     }
 
+    PrintWriter getOut() {
+        return out;
+    }
 }
