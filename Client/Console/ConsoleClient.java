@@ -80,6 +80,8 @@ public class ConsoleClient extends Thread {
         try {
             if (socket != null)
                 socket.close();
+                out.close();
+                in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

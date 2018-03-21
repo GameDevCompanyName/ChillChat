@@ -24,6 +24,11 @@ class Resender extends Thread {
 
     void setStop() {
         stoped = true;
+        try {
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.exit(1);
     }
 
