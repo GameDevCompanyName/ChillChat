@@ -25,12 +25,13 @@ public class Constants {
     public final static Double LOGO_SHOW_TIME = 2.0;
     public final static Double LOGIN_FADE_TIME = 1.5;
 
-    public final static Double TEXT_DISAPPEAR_TIME = 0.15;
+    public final static Double TEXT_DISAPPEAR_TIME = 0.135;
     public final static Double TEXT_APPEAR_TIME = 0.4;
+    public final static Double LINK_COLOR_CHANGE_TIME = 0.4;
 
     public static Boolean DEBUG = false;
-    static Boolean PLAY_MUSIC_ON_START = false;
-    static Boolean PLAY_MUSIC = false;
+    static Boolean PLAY_MUSIC_ON_START = true;
+    static Boolean PLAY_MUSIC = true;
     static double MUSIC_VOLUME = 0.05;
 
 

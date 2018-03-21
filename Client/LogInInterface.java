@@ -138,6 +138,12 @@ public class LogInInterface {
         logIn.tryToLogIn(loginField.getText(),
                 passwordField.getText());
 
+        clearErrorField();
+
+    }
+
+    private void clearErrorField() {
+        loginState.setText("");
     }
 
     private void tooLongInput() {

@@ -18,6 +18,7 @@ import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 import static ChillChat.Client.Utilites.Constants.DEBUG;
+import static ChillChat.Client.Utilites.Constants.LINK_COLOR_CHANGE_TIME;
 import static ChillChat.Client.Utilites.Constants.TEXT_APPEAR_TIME;
 
 class CustomConsole {
@@ -109,7 +110,6 @@ class CustomConsole {
         }
 
         flow.getChildren().addAll(t1);
-        //flow.prefWidthProperty().bind(mainBox.widthProperty());
 
         String[] parsedText = text.split(" ");
         StringBuilder buffer = new StringBuilder();
@@ -128,6 +128,7 @@ class CustomConsole {
 
                 Hyperlink link = new Hyperlink(word, client);
                 link.setFont(textFont);
+                link.makeSmooth(LINK_COLOR_CHANGE_TIME);
                 flow.getChildren().add(link);
 
             } else
@@ -157,11 +158,11 @@ class CustomConsole {
 
     }
 
-    private void animateTextAppear(Node flow) {
+    private void animateTextAppear(Node node) {
 
         GaussianBlur blur = new GaussianBlur();
 
-        flow.setEffect(blur);
+        node.setEffect(blur);
 
         Timeline textAppear = new Timeline();
         textAppear.getKeyFrames().add(
@@ -169,9 +170,9 @@ class CustomConsole {
         textAppear.getKeyFrames().add(
                 new KeyFrame(Duration.seconds(TEXT_APPEAR_TIME), new KeyValue(blur.radiusProperty(), 0.0)));
         textAppear.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(0.0), new KeyValue(flow.opacityProperty(), 0.0)));
+                new KeyFrame(Duration.seconds(0.0), new KeyValue(node.opacityProperty(), 0.0)));
         textAppear.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(TEXT_APPEAR_TIME), new KeyValue(flow.opacityProperty(), 1)));
+                new KeyFrame(Duration.seconds(TEXT_APPEAR_TIME), new KeyValue(node.opacityProperty(), 1)));
         textAppear.play();
 
 
@@ -199,7 +200,10 @@ class CustomConsole {
         t1.setStyle("-fx-fill: LightSkyBlue;");
 
         flow.getChildren().add(t1);
+
+        flow.setOpacity(0.0);
         textBox.getChildren().add(flow);
+        animateTextAppear(flow);
 
         slowScrollToBottom();
 

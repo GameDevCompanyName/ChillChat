@@ -1,8 +1,13 @@
 package ChillChat.Client.Utilites;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.effect.Glow;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class Hyperlink extends Text {
 
@@ -13,6 +18,10 @@ public class Hyperlink extends Text {
     private String clickedColor;
     private String defaultColor;
 
+    private Boolean isSmooth;
+    private Double colorChangeTime;
+    private Timeline colorChanger;
+
     //Некоторые эффекты
     //Инициализируются, когда вызывается метод задающий эти эффекты
     private Glow glow;
@@ -21,10 +30,10 @@ public class Hyperlink extends Text {
         super(url);
         this.app = application;
         setURLonClick(url);
-        currentDefaultColor = "#73aae5";
-        activeColor = "#3681FF";
-        clickedColor = "#9270FF";
-        defaultColor = "#73aae5";
+        activeColor = "#f06292";
+        clickedColor = "#ba68c8";
+        defaultColor = "#4fc3f7";
+        currentDefaultColor = defaultColor;
         this.setStyle("-fx-fill: " + currentDefaultColor + ";");
         updateFomating();
     }
@@ -57,13 +66,41 @@ public class Hyperlink extends Text {
         });
 
         setOnMouseEntered(e -> {
-            this.setStyle("-fx-fill: " + activeColor + ";");
+            if (!isSmooth)
+                this.setFill(Color.web(activeColor));
+            else
+                smoothChangeToActive();
         });
 
         setOnMouseExited(e -> {
-            this.setStyle("-fx-fill: " + currentDefaultColor + ";");
+            if (!isSmooth)
+                this.setFill(Color.web(currentDefaultColor));
+            else
+                smoothChangeToDefault();
         });
 
+    }
+
+    private void smoothChangeToDefault() {
+        colorChanger.getKeyFrames().clear();
+        colorChanger.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(0.0), new KeyValue(this.fillProperty(), this.getFill()))
+        );
+        colorChanger.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(colorChangeTime), new KeyValue(this.fillProperty(), Color.web(currentDefaultColor)))
+        );
+        colorChanger.playFromStart();
+    }
+
+    private void smoothChangeToActive() {
+        colorChanger.getKeyFrames().clear();
+        colorChanger.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(0.0), new KeyValue(this.fillProperty(), this.getFill()))
+        );
+        colorChanger.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(colorChangeTime), new KeyValue(this.fillProperty(), Color.web(activeColor)))
+        );
+        colorChanger.playFromStart();
     }
 
     public void refresh(){
@@ -75,6 +112,13 @@ public class Hyperlink extends Text {
         glow = new Glow();
         this.setEffect(glow);
         glow.setLevel(glowStrenght);
+    }
+
+    public void makeSmooth(double colorChangeTime){
+        isSmooth = true;
+        this.colorChangeTime = colorChangeTime;
+        colorChanger = new Timeline();
+        updateFomating();
     }
 
 

@@ -19,7 +19,7 @@ public class MusicPlayer extends Thread{
     private final MediaPlayer soundPlayer;
 
     public MusicPlayer() {
-        String uriString = new File("resources/music/ss13theme.mp3").toURI().toString();
+        String uriString = new File("resources/music/maybe.mp3").toURI().toString();
         soundPlayer = new MediaPlayer(new Media(uriString));
         soundPlayer.setVolume(MUSIC_VOLUME);
         soundPlayer.setCycleCount(MediaPlayer.INDEFINITE);
