@@ -44,7 +44,7 @@ public class ClientWindow {
         clientScene = new Scene(totalGroup,
                 Screen.getPrimary().getBounds().getWidth(),
                 Screen.getPrimary().getBounds().getHeight(),
-                Color.BLACK);
+                Color.web("#160000"));
 
         clientStage.setScene(clientScene);
 
@@ -117,7 +117,7 @@ public class ClientWindow {
 
         consoleClient = new ConsoleClient(this);
 
-        LogInInterface logInInterface = new LogInInterface(this, centralPane, consoleClient.getLogIn());
+        LogInInterface logInInterface = new LogInInterface(this, centralPane, consoleClient.getLogIn(), clientScene);
         this.logInInterface = logInInterface;
         Pane logInBox = logInInterface.getContainer();
         logInBox.setOpacity(0);

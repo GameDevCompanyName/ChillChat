@@ -1,13 +1,14 @@
 package ChillChat.Client;
 
+import ChillChat.Client.Utilites.Hyperlink;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,7 @@ import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 import static ChillChat.Client.Utilites.Constants.DEBUG;
+import static ChillChat.Client.Utilites.Constants.TEXT_APPEAR_TIME;
 
 class CustomConsole {
 
@@ -70,7 +72,7 @@ class CustomConsole {
     void textAppend(String name, String text, Integer color){
 
         TextFlow flow = new TextFlow();
-        Font textFont = new Font("Courier New", 18);
+        Font textFont = new Font("Courier New", 20);
 
         Text t1 = new Text();
         t1.setFont(textFont);
@@ -78,28 +80,31 @@ class CustomConsole {
 
         switch (color){
             case 1:
-                t1.setStyle("-fx-fill: Crimson;");
+                t1.setStyle("-fx-fill: #f44336;");
                 break;
             case 2:
-                t1.setStyle("-fx-fill: CornflowerBlue;");
+                t1.setStyle("-fx-fill: #3f51b5;");
                 break;
             case 3:
-                t1.setStyle("-fx-fill: Cyan;");
+                t1.setStyle("-fx-fill: #29b6f6;");
                 break;
             case 4:
-                t1.setStyle("-fx-fill: DarkOrange;");
+                t1.setStyle("-fx-fill: #ff5722;");
                 break;
             case 5:
-                t1.setStyle("-fx-fill: DarkSeaGreen;");
+                t1.setStyle("-fx-fill: #4caf50;");
                 break;
             case 6:
-                t1.setStyle("-fx-fill: ForestGreen;");
+                t1.setStyle("-fx-fill: #8bc34a;");
                 break;
             case 7:
-                t1.setStyle("-fx-fill: Khaki;");
+                t1.setStyle("-fx-fill: #ffeb3b;");
                 break;
             case 8:
-                t1.setStyle("-fx-fill: HotPink;");
+                t1.setStyle("-fx-fill: #ec407a;");
+                break;
+            default:
+                t1.setStyle("-fx-fill: #546e7a;");
                 break;
         }
 
@@ -112,26 +117,24 @@ class CustomConsole {
             String word = parsedText[i];
             if (word.contains("www.") || word.contains("https://") || word.contains("http://")){
 
-                Text bufferedText = new Text();
-                bufferedText.setStyle("-fx-fill: Lavender;");
-                bufferedText.setText(buffer.toString());
-                bufferedText.setFont(textFont);
-                flow.getChildren().add(bufferedText);
-                buffer = new StringBuilder();
+                if (buffer.length() != 0){
+                    Text bufferedText = new Text();
+                    bufferedText.setStyle("-fx-fill: Lavender;");
+                    bufferedText.setText(buffer.toString());
+                    bufferedText.setFont(textFont);
+                    flow.getChildren().add(bufferedText);
+                    buffer = new StringBuilder();
+                }
 
-                Hyperlink link = new Hyperlink(word);
-                link.setOnAction(event -> client.getHostServices().showDocument(word));
-                System.out.println(link);
-                link.setStyle("-fx-fill: Pink;");
+                Hyperlink link = new Hyperlink(word, client);
                 link.setFont(textFont);
-                flow.getChildren().add(new TextFlow(link));
+                flow.getChildren().add(link);
 
-
-            } else {
+            } else
                 buffer.append(word);
-                if (i != parsedText.length - 1)
-                    buffer.append(" ");
-            }
+
+            if (i != parsedText.length - 1)
+                buffer.append(" ");
         }
 
         if (buffer.length() != 0){
@@ -146,12 +149,38 @@ class CustomConsole {
 
         textBox.getChildren().add(flow);
 
+
+        animateTextAppear(flow);
+
+
+        slowScrollToBottom();
+
+    }
+
+    private void animateTextAppear(Node flow) {
+
+        GaussianBlur blur = new GaussianBlur();
+
+        flow.setEffect(blur);
+
+        Timeline textAppear = new Timeline();
+        textAppear.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(0.0), new KeyValue(blur.radiusProperty(), 25.0)));
+        textAppear.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(TEXT_APPEAR_TIME), new KeyValue(blur.radiusProperty(), 0.0)));
+        textAppear.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(0.0), new KeyValue(flow.opacityProperty(), 0.0)));
+        textAppear.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(TEXT_APPEAR_TIME), new KeyValue(flow.opacityProperty(), 1)));
+        textAppear.play();
+
+
+        /*
         Timeline shutUpAnimation = new Timeline();
         shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(flow.opacityProperty(), 0)));
         shutUpAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.5), new KeyValue(flow.opacityProperty(), 1)));
         shutUpAnimation.play();
-
-        slowScrollToBottom();
+        */
 
     }
 

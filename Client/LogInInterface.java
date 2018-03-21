@@ -4,10 +4,12 @@ import ChillChat.Client.Console.ConsoleClient;
 import ChillChat.Client.Console.LogInProcedure;
 import ChillChat.Client.Utilites.Constants;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -31,8 +33,20 @@ public class LogInInterface {
     private Label loginState;
 
     private ClientWindow clientWindow;
+    private Scene clientScene;
 
-    LogInInterface(ClientWindow clientWindow, StackPane parentPane, LogInProcedure logIn) {
+    LogInInterface(ClientWindow clientWindow, StackPane parentPane, LogInProcedure logIn, Scene scene) {
+
+        this.clientScene = scene;
+        clientScene.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)){
+                tryToLogIn();
+            }
+
+            if (event.getCode().equals(KeyCode.ESCAPE)){
+                clientWindow.goToLoginScreen(false);
+            }
+        });
 
         this.clientWindow = clientWindow;
         this.logIn = logIn;
@@ -60,7 +74,8 @@ public class LogInInterface {
 
         acceptButton.setOnMouseClicked(e -> tryToLogIn());
 
-        box.getChildren().addAll(titleText, inputLogin, loginField, inputPassword, passwordField, acceptButton, loginState);
+        box.getChildren().addAll(titleText, inputLogin, loginField,
+                inputPassword, passwordField, acceptButton, loginState);
         box.setAlignment(Pos.CENTER);
         box.prefWidthProperty().bind(interfacePane.widthProperty());
         box.setSpacing(10);
@@ -138,7 +153,7 @@ public class LogInInterface {
     }
 
     public void serverIsUnavalable() {
-        loginState.setText("Сервер недоступен.");
+        loginState.setText("Соединение разорвано.");
     }
 
     void updateConsoleClient(ConsoleClient consoleClient) {

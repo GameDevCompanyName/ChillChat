@@ -76,6 +76,7 @@ public class ConsoleClient extends Thread {
     }
 
     public void closeAllThreads() {
+
         try {
             if (socket != null)
                 socket.close();
@@ -84,7 +85,10 @@ public class ConsoleClient extends Thread {
         }
         if (resender != null)
             resender.setStop();
-        this.interrupt();
+
+        System.exit(1);
+        //this.interrupt();
+
     }
 
     public Integer getColor() {

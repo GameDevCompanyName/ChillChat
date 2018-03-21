@@ -24,7 +24,7 @@ class Resender extends Thread {
 
     void setStop() {
         stoped = true;
-        this.interrupt();
+        System.exit(1);
     }
 
     @Override
