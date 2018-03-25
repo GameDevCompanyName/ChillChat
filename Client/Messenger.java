@@ -1,7 +1,9 @@
 package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleClient;
+import ChillChat.Client.Utilites.ClientMessage;
 import ChillChat.Client.Utilites.Constants;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -23,6 +25,7 @@ class Messenger {
     private Scene clientScene;
     private ConsoleClient consoleClient;
     private ClientWindow clientWindow;
+    private StackPane centralPane;
 
     private VBox messengerBox;
 
@@ -31,8 +34,9 @@ class Messenger {
     private GaussianBlur textBlur;
 
 
-    Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Integer color, Client client, ClientWindow clientWindow) {
+    Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Client client, ClientWindow clientWindow) {
 
+        this.centralPane = centralPane;
         this.clientWindow = clientWindow;
         this.clientScene = clientScene;
 
@@ -71,9 +75,8 @@ class Messenger {
         inputField = new TextField();
         inputField.setFont(new Font("Courier New", 19));
         inputField.setEffect(textBlur);
+        inputField.setStyle("-fx-background-color: transparent;");
         textBlur.setInput(textGlow);
-
-        changeInterfaceColor(color);
 
         inputField.prefWidthProperty().bind(centralPane.widthProperty());
 
@@ -90,33 +93,33 @@ class Messenger {
 
     }
 
-    private void changeInterfaceColor(Integer color) {
+    public void changeInterfaceColor(String color) {
 
-        String webColorString = "";
+        final String webColorString;
 
         switch (color){
-            case 1:
+            case "1":
                 webColorString = "#f44336";
                 break;
-            case 2:
+            case "2":
                 webColorString = "#3f51b5";
                 break;
-            case 3:
+            case "3":
                 webColorString = "#29b6f6";
                 break;
-            case 4:
+            case "4":
                 webColorString = "#ff5722";
                 break;
-            case 5:
+            case "5":
                 webColorString = "#4caf50";
                 break;
-            case 6:
+            case "6":
                 webColorString = "#8bc34a";
                 break;
-            case 7:
+            case "7":
                 webColorString = "#ffeb3b";
                 break;
-            case 8:
+            case "8":
                 webColorString = "#ec407a";
                 break;
             default:
@@ -124,7 +127,25 @@ class Messenger {
                 break;
         }
 
-        inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: " + webColorString + ";");
+        FadeTransition fadeTransition = new FadeTransition(
+                Duration.seconds(1.0),
+                inputField
+                );
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.0);
+        fadeTransition.setOnFinished(e -> {
+            inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: " + webColorString + ";");
+            FadeTransition fadeInTransition = new FadeTransition(
+                    Duration.seconds(1.0),
+                    inputField
+            );
+            fadeInTransition.setFromValue(0.0);
+            fadeInTransition.setToValue(1.0);
+            fadeInTransition.play();
+        });
+        fadeTransition.play();
+
+
 
     }
 
@@ -156,21 +177,40 @@ class Messenger {
 
     }
 
+    public StackPane getCentralPane() {
+        return centralPane;
+    }
+
     Node getContainer() {
         return messengerBox;
     }
 
-    void displayMessage(String name, String text, Integer color) {
+    void displayMessage(String name, String text, String color) {
         console.textAppend(name, text, color);
     }
 
     private void sendMessage(String text) {
-
-        consoleClient.sendMessage(text);
+        consoleClient.sendMessage(ClientMessage.messageSend(text));
     }
 
     void displayServerMessage(String text) {
-        console.serverMessageAppend(text);
+        console.serverMessageAppend("[SERVER]: " + text);
+    }
+
+    public void displayUserKicked(String login, String reason) {
+        console.serverMessageAppend(login + " отключился.\nПричина: " + reason);
+    }
+
+    public void displayDisconnectedByReason(String reason) {
+        console.serverMessageAppend("Вы отключены от сервера.\nПричина: " + reason);
+    }
+
+    public void displayNewUserConnected(String login) {
+        console.serverMessageAppend(login + " подключился.");
+    }
+
+    public void displayUserDisconnected(String login) {
+        console.serverMessageAppend(login + " отключился.");
     }
 
 }

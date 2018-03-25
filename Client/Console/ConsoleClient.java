@@ -1,6 +1,7 @@
 package ChillChat.Client.Console;
 
 import ChillChat.Client.ClientWindow;
+import ChillChat.Client.Utilites.ClientMessage;
 
 import java.io.*;
 import java.net.Socket;
@@ -41,12 +42,6 @@ public class ConsoleClient extends Thread {
 
     }
 
-    public void loggedIn(){
-
-        System.out.println("Подключаюсь к общему чату...");
-
-    }
-
     private void initStreams() {
 
         try{
@@ -66,9 +61,7 @@ public class ConsoleClient extends Thread {
     }
 
     public void sendMessage(String message){
-
-        out.println(JsonHandler.getString(message));
-
+        out.println(message);
     }
 
     public boolean isInitiated(){
@@ -77,29 +70,36 @@ public class ConsoleClient extends Thread {
 
     public void closeAllThreads() {
 
+        out.println(ClientMessage.disconnectSend("Закрыл соединение."));
+
         try {
             if (socket != null)
                 socket.close();
-            if (out != null)
-                out.close();
-            if (in != null)
-                in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         if (resender != null)
             resender.setStop();
 
-        System.exit(1);
-        //this.interrupt();
-
     }
 
-    public Integer getColor() {
+    public String getColor() {
         return logIn.getColor();
     }
 
     PrintWriter getOut() {
         return out;
+    }
+
+    public void passWrong() {
+        logIn.passWrong();
+    }
+
+    public void userAlreadyOnline() {
+        logIn.userAlreadyOnline();
+    }
+
+    public void loggedIn() {
+        logIn.loginSuccess();
     }
 }

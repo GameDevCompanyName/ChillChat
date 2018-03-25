@@ -70,7 +70,7 @@ class CustomConsole {
         animation.play();
     }
 
-    void textAppend(String name, String text, Integer color){
+    void textAppend(String name, String text, String color){
 
         TextFlow flow = new TextFlow();
         Font textFont = new Font("Courier New", 20);
@@ -80,28 +80,28 @@ class CustomConsole {
         t1.setText(name + ": ");
 
         switch (color){
-            case 1:
+            case "1":
                 t1.setStyle("-fx-fill: #f44336;");
                 break;
-            case 2:
+            case "2":
                 t1.setStyle("-fx-fill: #3f51b5;");
                 break;
-            case 3:
+            case "3":
                 t1.setStyle("-fx-fill: #29b6f6;");
                 break;
-            case 4:
+            case "4":
                 t1.setStyle("-fx-fill: #ff5722;");
                 break;
-            case 5:
+            case "5":
                 t1.setStyle("-fx-fill: #4caf50;");
                 break;
-            case 6:
+            case "6":
                 t1.setStyle("-fx-fill: #8bc34a;");
                 break;
-            case 7:
+            case "7":
                 t1.setStyle("-fx-fill: #ffeb3b;");
                 break;
-            case 8:
+            case "8":
                 t1.setStyle("-fx-fill: #ec407a;");
                 break;
             default:
@@ -150,7 +150,6 @@ class CustomConsole {
 
         textBox.getChildren().add(flow);
 
-
         animateTextAppear(flow);
 
 
@@ -196,7 +195,7 @@ class CustomConsole {
 
         Text t1 = new Text();
         t1.setFont(textFont);
-        t1.setText("[SERVER]: " + text);
+        t1.setText(text);
         t1.setStyle("-fx-fill: LightSkyBlue;");
 
         flow.getChildren().add(t1);

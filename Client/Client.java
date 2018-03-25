@@ -18,4 +18,5 @@ public class Client extends Application {
         clientWindow.launch();
 
     }
+
 }

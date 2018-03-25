@@ -1,6 +1,7 @@
 package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleClient;
+import ChillChat.Client.Utilites.ClientMethods;
 import ChillChat.Client.Utilites.MusicPlayer;
 import ChillChat.Client.Utilites.Utils;
 import javafx.animation.FadeTransition;
@@ -37,6 +38,8 @@ public class ClientWindow {
 
 
     ClientWindow(Client client, Stage primaryStage) {
+
+        ClientMethods.setClientWindow(this);
 
         this.client = client;
         clientStage = primaryStage;
@@ -110,7 +113,7 @@ public class ClientWindow {
         centralPane.setOpacity(1);
 
         ImageView background = new ImageView(Utils.getRandomLogInBackground());
-        double scaleCoef = (350*500)/background.getImage().getWidth();
+        double scaleCoef = (350 * 500) / background.getImage().getWidth();
         background.scaleXProperty().bind(centralPane.widthProperty().divide(scaleCoef));
         background.scaleYProperty().bind(centralPane.widthProperty().divide(scaleCoef));
         background.setOpacity(0);
@@ -127,7 +130,7 @@ public class ClientWindow {
         logInBox.maxWidthProperty().bind(centralPane.widthProperty());
         logInBox.maxHeightProperty().bind(centralPane.heightProperty());
 
-        if (DEBUG){
+        if (DEBUG) {
             logInBox.setStyle("-fx-border-color: green");
         }
 
@@ -144,7 +147,7 @@ public class ClientWindow {
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
 
-        FadeTransition backFadeIn = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME*2), background);
+        FadeTransition backFadeIn = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME * 2), background);
         backFadeIn.setFromValue(0);
         backFadeIn.setToValue(1);
 
@@ -166,7 +169,7 @@ public class ClientWindow {
 
     void loggedIn() {
 
-        //this.logInInterface = null;
+        createMessenger();
 
         FadeTransition fadeOut = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
         fadeOut.setFromValue(1);
@@ -176,10 +179,7 @@ public class ClientWindow {
 
     }
 
-    private void changeToMessenger() {
-
-        musicPlayer.slowShutUp();
-
+    private void createMessenger(){
         StackPane centralPane = new StackPane();
 
         centralPane.prefWidthProperty().bind(clientScene.widthProperty());
@@ -187,17 +187,22 @@ public class ClientWindow {
         centralPane.maxWidthProperty().bind(clientScene.widthProperty());
         centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
-        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, consoleClient.getColor(), client, this);
+        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, client, this);
         this.messenger = messenger;
+    }
+
+    private void changeToMessenger() {
+
+        musicPlayer.slowShutUp();
 
         totalGroup.getChildren().remove(activeNode);
-        centralPane.getChildren().add(messenger.getContainer());
-        activeNode = centralPane;
+        messenger.getCentralPane().getChildren().add(messenger.getContainer());
+        activeNode = messenger.getCentralPane();
         totalGroup.getChildren().add(activeNode);
 
     }
 
-    public void displayMessage(String name, String text, Integer color) {
+    public void displayMessage(String name, String text, String color) {
         if (messenger != null)
             messenger.displayMessage(name, text, color);
     }
@@ -216,12 +221,15 @@ public class ClientWindow {
     }
 
     void goToLoginScreen(boolean becauseOfError) {
+
         closeConnection();
+
         FadeTransition fadeOut = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME), activeNode);
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
         fadeOut.play();
         fadeOut.setOnFinished(e -> launchLogIn(activeNode, becauseOfError));
+
     }
 
     private void closeConnection() {
@@ -259,6 +267,43 @@ public class ClientWindow {
         consoleClient = new ConsoleClient(this);
         logInInterface.updateConsoleClient(consoleClient);
         consoleClient.getLogIn().setLogInInterface(logInInterface);
+    }
+
+    public void passWrongError() {
+        consoleClient.passWrong();
+    }
+
+    public void userAlreadyOnline() {
+        consoleClient.userAlreadyOnline();
+    }
+
+    public void loginSuccess() {
+        consoleClient.loggedIn();
+    }
+
+    public void userColorRecieved(String login, String color) {
+        if (messenger != null)
+            messenger.changeInterfaceColor(color);
+    }
+
+    public void userKickedRecieved(String login, String reason) {
+        if (messenger != null)
+            messenger.displayUserKicked(login, reason);
+    }
+
+    public void disconnectedByReason(String reason) {
+        if (messenger != null)
+            messenger.displayDisconnectedByReason(reason);
+    }
+
+    public void userConnectedRecieved(String login) {
+        if (messenger != null)
+            messenger.displayNewUserConnected(login);
+    }
+
+    public void userDisconnectedRecieved(String login) {
+        if (messenger != null)
+            messenger.displayUserDisconnected(login);
     }
 
 }

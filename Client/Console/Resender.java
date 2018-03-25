@@ -1,9 +1,8 @@
 package ChillChat.Client.Console;
 
 import ChillChat.Client.ClientWindow;
+import ChillChat.Client.Utilites.ClientMessage;
 import javafx.application.Platform;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,49 +29,29 @@ class Resender extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.exit(1);
+        this.interrupt();
     }
 
     @Override
     public void run() {
-        try {
-            while (!stoped) {
 
-                String str = in.readLine();
+        while (!stoped){
 
-                JSONObject message = (JSONObject) JSONValue.parse(str);
-
-                Platform.runLater(() -> {
-
-                    if (message.get("type").equals("1")){
-                        String name = message.get("name").toString();
-                        String text = message.get("text").toString();
-                        Integer color = Integer.parseInt(message.get("color").toString());
-                        clientWindow.displayMessage(name, text, color);
+            try {
+                String message = in.readLine();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ClientMessage.read(message);
                     }
-
-                    if (message.get("type").equals("2")){
-                        String text = message.get("text").toString();
-                        clientWindow.displayServerMessage(text);
-                    }
-
-                    if (message.get("type").equals("3")){
-                        logIn.serverAnswer(message.get("response").toString());
-                    }
-
-                    if (message.get("type").equals("4")){
-                        String reason = message.get("reason").toString();
-                        clientWindow.displayServerMessage("Вы были отключены от сервера. Причина:");
-                        clientWindow.displayServerMessage(reason);
-                    }
-
                 });
-
+            } catch (IOException e) {
+                setStop();
             }
 
-        } catch (IOException e) {
-            clientWindow.inputStreamProblem();
+
         }
+
     }
 
     public String getTime() {
