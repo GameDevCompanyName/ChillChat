@@ -4,68 +4,62 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/*
+Броадкастер работает с соединениями. Содержит в себе их список и методы для работы с ними.
+ */
 public class Broadcaster {
 
-    List<Connection> connections = new ArrayList();
-
-
-    public short connectClient(Connection client){
-
-
-        if (connections.contains(client))
-            return -1;
-
+    //Список соединений
+    private List<Connection> connections = new ArrayList();
+    private String startText = Utilities.getStartText("Broadcaster");
+    //Добавить нового клиента в список соединений
+    public void connectClient(Connection client){
         connections.add(client);
-        System.out.println("Broadcaster: Клиент добавлен в пул соединений");
+        broadcastMessage(ServerMessage.serverUserLoginSend(client.getUserName()));
         printClients();
-        return 1;
-
     }
 
-    public short disconnectClient(Connection client){
-
-        if (!connections.contains(client))
-            return -1;
-
+    //Удалить клиента из списка
+    public void disconnectClient(Connection client){
         connections.remove(client);
-        System.out.println("Broadcaster: Клиент удалён из пула соединений");
+        broadcastMessage(ServerMessage.serverUserDisconnectSend(client.getUserName()));
         printClients();
-        return 1;
-
     }
 
     private void printClients() {
-        System.out.println("Клиентов: " + connections.size());
+        System.out.println(startText+"Клиентов: " + connections.size());
     }
 
-    public short broadcastMessage(Message message){
-        System.out.println("Broadcaster: Отправляю всем сообщение");
+    //Передача сообщения всем клиентам
+    public void broadcastMessage(String message){
         try {
             for (Connection connection: connections) {
                 connection.sendMessage(message);
             }
         } catch (Exception e){
-            System.out.println("Ошибка при отправке сообщения");
+            System.out.println(startText+"Ошибка при отправке сообщения");
             e.printStackTrace();
         }
-
-        return 1;
-
     }
+
     public List<Connection> getConnections(){
         return connections;
     }
+
+    //Получить соединение по логину
     public Connection getConnectionByLogin(String login){
         for (Connection conn: connections) {
-            if(conn.getLogin()==null)
+            if(conn.getUserName()==null)
                 continue;
-            if(conn.getLogin().equals(login))
+            if(conn.getUserName().equals(login))
             {
                 return conn;
             }
         }
         return null;
     }
+
+    //Отключить всех
     public void disconnectAll(){
 
         Iterator<Connection> i = connections.iterator();
@@ -75,8 +69,7 @@ public class Broadcaster {
             i.remove();
         }
         connections.clear();
-        System.out.println("Соединения закрыты");
+        System.out.println(startText+"Соединения закрыты");
         printClients();
     }
-
 }

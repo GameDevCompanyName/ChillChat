@@ -10,47 +10,7 @@ public class ClientMessage {
 
     public static void read(String input){
         JSONObject incomingMessage = (JSONObject) JSONValue.parse(input);
-        int incMsgSize = incomingMessage.size();
         String methodName = incomingMessage.get("type") + "Received";
-        ClientMethods clientMethods = new ClientMethods();
-        switch (incMsgSize) {
-            case 1:
-                try {
-                    Method method = clientMethods.getClass().getMethod(methodName);
-                    method.invoke(null);
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case 2:
-                try {
-                    Method method = clientMethods.getClass().getMethod(methodName, String.class);
-                    method.invoke(null, incomingMessage.get("first"));
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case 3:
-                try {
-                    Method method = clientMethods.getClass().getMethod(methodName, String.class, String.class);
-                    method.invoke(null, incomingMessage.get("first"), incomingMessage.get("second"));
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
     }
 
 

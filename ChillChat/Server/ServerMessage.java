@@ -3,54 +3,36 @@ package ChillChat.Server;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+/*
+Статический класс для чтения и упаковки сообщений.
+ */
 
 public class ServerMessage {
 
     //Читаем входное сообщение от клиента
-    public static void read(String input){
+    public static String read(String input, Connection connection){
         JSONObject incomingMessage = (JSONObject) JSONValue.parse(input);
-        int incMsgSize = incomingMessage.size();
-        String methodName = incomingMessage.get("type") + "Received";
-        ServerMethods serverMethods = new ServerMethods();
-        switch (incMsgSize) {
-            case 1:
-                try {
-                    Method method = serverMethods.getClass().getMethod(methodName);
-                    method.invoke(null);
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case 2:
-                try {
-                    Method method = serverMethods.getClass().getMethod(methodName, String.class);
-                    method.invoke(null, incomingMessage.get("first"));
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case 3:
-                try {
-                    Method method = serverMethods.getClass().getMethod(methodName, String.class, String.class);
-                    method.invoke(null, incomingMessage.get("first"), incomingMessage.get("second"));
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                break;
+        String type = incomingMessage.get("type").toString();
+        switch (type){
+            case "version":
+                return "version:"+ServerMethods.versionReceived(incomingMessage.get("first").toString());
+            case "loginAttempt":
+                return "loginAttempt:"+ServerMethods.loginAttemptReceived(
+                        incomingMessage.get("first").toString(),
+                        incomingMessage.get("second").toString()
+                );
+            case "message":
+                ServerMethods.messageReceived(
+                        incomingMessage.get("first").toString(),
+                        connection.getUserName(),
+                        connection.getUserColor()
+                );
+                return "true";
+            case "disconnect":
+                ServerMethods.disconnectReceived(connection, "пользователь разорвал соединение");
+                return "disconnect";
+            default:
+                return "false";
         }
     }
 
@@ -91,11 +73,12 @@ public class ServerMessage {
         object.put("second", color);
         return object.toJSONString();
     }
-    public static String userMessageSend(String login, String message){
+    public static String userMessageSend(String login, String message, String color){
         JSONObject object = new JSONObject();
         object.put("type", "userMessage");
         object.put("first", login);
         object.put("second", message);
+        object.put("third", color);
         return object.toJSONString();
     }
     public static String userActionSend (String login, String action){

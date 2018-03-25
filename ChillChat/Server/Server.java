@@ -8,48 +8,59 @@ import java.util.Scanner;
 
 import static ChillChat.GlobalParameters.PORT;
 
+/*
+Главный класс. Начальная инициализация основных элементов.
+ */
 
 public class Server {
 
-    Broadcaster broadcaster = new Broadcaster();
-
+    Broadcaster broadcaster;
     DBConnector dbConnector;
 
-    {
+    public Server(){
+        broadcaster = new Broadcaster();
         try {
             dbConnector = new DBConnector();
-            CommandLine cmd = new CommandLine(dbConnector, broadcaster); //Создаем поток ввода для сервера
+            //Инициализируем командную строку сервера в отдельном потоке
+            CommandLine cmd = new CommandLine(broadcaster);
             cmd.start();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        ServerMethods.setBroadcaster(broadcaster);
+        ServerMethods.setDbConnector(dbConnector);
+        Commands.setBroadcaster(broadcaster);
+        Commands.setDbConnector(dbConnector);
     }
 
 
     public static void main(String[] ar) {
 
         Server server = new Server();
+        String startText = Utilities.getStartText("Server");
 
         try {
             ServerSocket ss = new ServerSocket(PORT);
 
+            //В цикле на каждое подключение по сокету выделяем поток с новым соединением
             while (true) {
 
-                System.out.println("Ожидаю нового клиента");
+                System.out.println(startText+"Ожидаю нового клиента");
+
+                //Ждем подключение по сокету
                 Socket socket = ss.accept();
 
-                System.out.println("Соединение установлено с клиентом: " + socket.getInetAddress());
+                System.out.println(startText+"Соединение установлено с клиентом: " + socket.getInetAddress());
 
                 //Создаем соединение с клиентом
                 Connection con = new Connection(socket, server.broadcaster, server.dbConnector);
-                server.broadcaster.connectClient(con);
                 con.start();
 
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            System.out.println("Серверу пиздец");
+            System.out.println(startText+"Серверу пиздец");
             System.exit(1);
         }
 

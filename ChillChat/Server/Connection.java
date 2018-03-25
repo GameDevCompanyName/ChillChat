@@ -1,12 +1,12 @@
 package ChillChat.Server;
 
-
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.Charset;
+
+/*
+Класс соединения. Создается на время соединения с клиентом в отдельном потоке. В нем происходит обмен сообщениями.
+ */
 
 public class Connection extends Thread {
 
@@ -15,12 +15,11 @@ public class Connection extends Thread {
     private Socket socket;
     private Broadcaster broadcaster;
     private DBConnector dbConnector;
-    boolean clientConnected = true;
+    private String startText = Utilities.getStartText("Connection");
 
-
-    String name;  //Имя пользователя
-    Integer userColor;  //Цвет пользователя
-
+    private String userName;  //Имя пользователя
+    private String userColor;  //Цвет пользователя
+    private String userRole; //Роль пользователя
 
     public Connection(Socket socket, Broadcaster broadcaster, DBConnector dbConnector) {
 
@@ -28,124 +27,108 @@ public class Connection extends Thread {
         this.dbConnector = dbConnector;
         this.socket = socket;
 
+        //Потоки ввода-вывода
         try {
-
             in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Charset.forName("UTF-8")));
-            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), Charset.forName("UTF-8"))), true);
-
+            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+                    socket.getOutputStream(),
+                    Charset.forName("UTF-8"))),
+                    true);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void run() {
-
         try {
-
-            System.out.println("Обработка клиента " + socket.getInetAddress());
-
+            System.out.println(startText+"Обработка клиента " + socket.getInetAddress());
+            //Ожидаем получение версии клиента
+            String version = in.readLine();
+            String[] result = ServerMessage.read(version, this).split(":");
+            if (!result[0].equals("version")||result[1].equals("false")){
+                if(!result[0].equals("disconnect")){
+                    disconnect("Несовместимая версия");
+                    return;
+                }
+                return;
+            }
+            System.out.println(startText+"Версия клиента: "+result[1]);
             boolean loggedIn = false;
 
             while (!loggedIn){
-
-                System.out.println("Ожидание попытки залогинится.");
-                String message = in.readLine();  //Ждем сообщение от клиента
-
-                //Распарсили сообщение в стринги
-                JSONObject loginAttempt = (JSONObject) JSONValue.parse(message);
-                String login = (String) loginAttempt.get("login");
-                String password = (String) loginAttempt.get("password");
-                if(broadcaster.getConnectionByLogin(login)!=null){
-                    sendLoginMessage(-2);
+                System.out.println(startText+"Ожидание попытки залогинится.");
+                //Ожидаем получение логина и пароля
+                String loginAttempt = in.readLine();
+                String[] loginResult = ServerMessage.read(loginAttempt, this).split(":");
+                if(!loginResult[0].equals("loginAttempt") || loginResult[1].equals("false")){
+                    out.println(ServerMessage.loginWrongErrorSend());
+                    System.out.println(startText+"Неверный пароль");
                     continue;
                 }
-                int loginAttemptCode = dbConnector.checkLoginAttempt(login, password);
-                //colorCode > 0 - удачно, пользователь существовал
-                //colorCode > 0 - удачно, новый пользователь
-                //-1 - неверный пароль
-
-                if (loginAttemptCode > 0){
-                    System.out.println(login + " удачно залогинился в чате.");
-                    userColor = loginAttemptCode;
-                    name = login;
-                    loggedIn = true;
+                if(broadcaster.getConnectionByLogin(loginResult[1])!=null){
+                    out.println(ServerMessage.loginAlreadyErrorSend());
+                    System.out.println(startText+"Пользователь уже онлайн");
+                    continue;
                 }
 
-                sendLoginMessage(loginAttemptCode);
-                Message msg = new Message(login+" зашел в чат","SERVER", 3, 2);
-                broadcaster.broadcastMessage(msg);
-
+                //Успешный логин
+                userName = loginResult[1];
+                userColor = dbConnector.getUserColor(loginResult[1]);
+                userRole = dbConnector.getUserRole(loginResult[1]);
+                loggedIn = true;
+                out.println(ServerMessage.loginSuccessSend());
+                System.out.println(startText+"Успешный логин");
             }
 
+            //Добавляем в список соединений
             broadcaster.connectClient(this);
+            out.println(ServerMessage.userColorSend(userName, userColor));
 
-
-            while (clientConnected){
+            //В цикле читаем сообщений пользователя
+            while (true){
 
                 String incomingMessage = in.readLine();
-                if(incomingMessage == null || !clientConnected)
-                    continue;
-
-                JSONObject jsonMessage = (JSONObject) JSONValue.parse(incomingMessage);
-
-                Message message = new Message(
-                        (String) jsonMessage.get("text"),
-                        name,
-                        userColor,
-                        1);
-
-                broadcaster.broadcastMessage(message);
+                ServerMessage.read(incomingMessage, this);
 
             }
 
 
         } catch (IOException e) {
-            System.out.println(name + " разорвал соединение.");
             broadcaster.disconnectClient(this);
-            Message msg = new Message(name+" вышел","SERVER", 3, 2);
-            broadcaster.broadcastMessage(msg);
+            this.interrupt();
         }
 
     }
 
-    private void sendLoginMessage(int loginAttemptCode) {
-        JSONObject object = new JSONObject();
-        object.put("type", "3");
-        object.put("response", Integer.toString(loginAttemptCode));
-        out.println(object.toJSONString());
-    }
-
-    public void sendMessage(Message message){
-
-        JSONObject object = new JSONObject();
-        object.put("text", message.getText());
-        object.put("name", message.getSenderName());
-        object.put("color", Integer.toString(message.getColorCode()));
-        object.put("type", Integer.toString(message.getMessageType()));
-        out.println(object.toJSONString());
-
-    }
-
-
-    public void disconnectMessage(String reason){
-        JSONObject object = new JSONObject();
-        object.put("reason", reason);
-        object.put("type", "4");
-        out.println(object.toJSONString());
-    }
-    public void updateColor(Integer color)
+    //Обновление цвета в соединении и отправка пользователю его нового цвета
+    public void updateColor(String color)
     {
-        userColor = dbConnector.getUserColor(name);
-        System.out.println("Цвет пользователя "+name+" изменен на "+userColor.toString());
+        userColor = color;
+        System.out.println(startText+"Цвет пользователя "+ userName +" изменен на "+userColor);
+        out.println(ServerMessage.userColorSend(userName,color));
     }
 
-    public String getLogin(){
-        return name;
+    //Отправка сообщения
+    public void sendMessage(String message){
+        out.println(message);
     }
 
+    public String getUserName(){
+        return userName;
+    }
+
+    public String getUserColor() {
+        return userColor;
+    }
+
+    public String getUserRole() {
+        return userRole;
+    }
+
+    //Отключение пользователя, закрытие соединения и потока
     public void disconnect(String reason) {
-            disconnectMessage(reason);
-            clientConnected = false;
+        System.out.println(startText + userName +" отключен по причине: "+reason);
+        out.println(ServerMessage.userDisconnectSend(reason));
         try {
             socket.close();
         } catch (IOException e) {
