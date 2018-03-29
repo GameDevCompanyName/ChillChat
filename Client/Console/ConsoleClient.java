@@ -70,7 +70,8 @@ public class ConsoleClient extends Thread {
 
     public void closeAllThreads() {
 
-        out.println(ClientMessage.disconnectSend("Закрыл соединение."));
+        if (out != null)
+            out.println(ClientMessage.disconnectSend("Закрыл соединение."));
 
         try {
             if (socket != null)

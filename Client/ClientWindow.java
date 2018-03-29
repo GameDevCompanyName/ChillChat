@@ -187,7 +187,7 @@ public class ClientWindow {
         centralPane.maxWidthProperty().bind(clientScene.widthProperty());
         centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
-        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, client, this);
+        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, client, this, client);
         this.messenger = messenger;
     }
 

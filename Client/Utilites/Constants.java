@@ -30,8 +30,8 @@ public class Constants {
     public final static Double LINK_COLOR_CHANGE_TIME = 0.4;
 
     public static Boolean DEBUG = false;
-    static Boolean PLAY_MUSIC_ON_START = true;
-    static Boolean PLAY_MUSIC = true;
+    static Boolean PLAY_MUSIC_ON_START = false;
+    static Boolean PLAY_MUSIC = false;
     static double MUSIC_VOLUME = 0.05;
 
 

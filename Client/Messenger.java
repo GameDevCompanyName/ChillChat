@@ -34,7 +34,7 @@ class Messenger {
     private GaussianBlur textBlur;
 
 
-    Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Client client, ClientWindow clientWindow) {
+    Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Client client, ClientWindow clientWindow, Client client1) {
 
         this.centralPane = centralPane;
         this.clientWindow = clientWindow;
@@ -72,10 +72,10 @@ class Messenger {
         textBlur = new GaussianBlur();
         textBlur.setRadius(0.0);
 
+        Font inputFieldFont = new Font("Courier New", 18);
         inputField = new TextField();
-        inputField.setFont(new Font("Courier New", 19));
+        inputField.setFont(inputFieldFont);
         inputField.setEffect(textBlur);
-        inputField.setStyle("-fx-background-color: transparent;");
         textBlur.setInput(textGlow);
 
         inputField.prefWidthProperty().bind(centralPane.widthProperty());

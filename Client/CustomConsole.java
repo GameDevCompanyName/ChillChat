@@ -28,8 +28,13 @@ class CustomConsole {
     private ScrollPane scrollPane;
     private VBox textBox;
 
+    private Font commonFont;
+    private Font biggerFont;
+
     CustomConsole(StackPane parentPane, Client client){
 
+        commonFont = new Font("Courier New", 18);
+        biggerFont = new Font("Courier New", 20);
         this.client = client;
         mainBox = new StackPane();
         textBox = new VBox();
@@ -73,10 +78,9 @@ class CustomConsole {
     void textAppend(String name, String text, String color){
 
         TextFlow flow = new TextFlow();
-        Font textFont = new Font("Courier New", 20);
 
         Text t1 = new Text();
-        t1.setFont(textFont);
+        t1.setFont(commonFont);
         t1.setText(name + ": ");
 
         switch (color){
@@ -121,13 +125,13 @@ class CustomConsole {
                     Text bufferedText = new Text();
                     bufferedText.setStyle("-fx-fill: Lavender;");
                     bufferedText.setText(buffer.toString());
-                    bufferedText.setFont(textFont);
+                    bufferedText.setFont(commonFont);
                     flow.getChildren().add(bufferedText);
                     buffer = new StringBuilder();
                 }
 
                 Hyperlink link = new Hyperlink(word, client);
-                link.setFont(textFont);
+                link.setFont(commonFont);
                 link.makeSmooth(LINK_COLOR_CHANGE_TIME);
                 flow.getChildren().add(link);
 
@@ -142,7 +146,7 @@ class CustomConsole {
             Text bufferedText = new Text();
             bufferedText.setStyle("-fx-fill: Lavender;");
             bufferedText.setText(buffer.toString());
-            bufferedText.setFont(textFont);
+            bufferedText.setFont(commonFont);
             flow.getChildren().add(bufferedText);
         }
 
@@ -191,10 +195,9 @@ class CustomConsole {
     void serverMessageAppend(String text) {
 
         TextFlow flow = new TextFlow();
-        Font textFont = new Font("Courier New", 20);
 
         Text t1 = new Text();
-        t1.setFont(textFont);
+        t1.setFont(biggerFont);
         t1.setText(text);
         t1.setStyle("-fx-fill: LightSkyBlue;");
 

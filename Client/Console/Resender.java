@@ -22,20 +22,21 @@ class Resender extends Thread {
     }
 
     void setStop() {
+
         stoped = true;
         try {
             in.close();
-            System.exit(1);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.interrupt();
+
+        //this.interrupt();
     }
 
     @Override
     public void run() {
 
-        while (!stoped){
+        while (!stoped) {
 
             try {
                 String message = in.readLine();
@@ -46,7 +47,7 @@ class Resender extends Thread {
                     }
                 });
             } catch (IOException e) {
-                setStop();
+                System.out.println("Выключение входного потока");
             }
 
 
