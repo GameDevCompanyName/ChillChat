@@ -103,4 +103,5 @@ public class ConsoleClient extends Thread {
     public void loggedIn() {
         logIn.loginSuccess();
     }
+
 }

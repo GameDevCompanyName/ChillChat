@@ -1,10 +1,12 @@
 package ChillChat.Client;
 
 import ChillChat.Client.Utilites.Hyperlink;
+import ChillChat.Client.Utilites.Message;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -12,6 +14,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -29,16 +32,19 @@ class CustomConsole {
     private VBox textBox;
 
     private Font commonFont;
-    private Font biggerFont;
+    private Font serverFont;
 
     CustomConsole(StackPane parentPane, Client client){
 
         commonFont = new Font("Courier New", 18);
-        biggerFont = new Font("Courier New", 20);
+        serverFont = new Font("Courier New Italic", 22);
         this.client = client;
         mainBox = new StackPane();
         textBox = new VBox();
         scrollPane = new ScrollPane();
+
+        textBox.setPadding(new Insets(6, 6, 6, 6));
+        textBox.setSpacing(5);
 
         mainBox.prefHeightProperty().bind(parentPane.heightProperty());
         mainBox.prefWidthProperty().bind(parentPane.widthProperty());
@@ -77,7 +83,13 @@ class CustomConsole {
 
     void textAppend(String name, String text, String color){
 
+        Message message = new Message(name);
+
         TextFlow flow = new TextFlow();
+
+        if (DEBUG) {
+            flow.setStyle("-fx-border-color: #81ffd9");
+        }
 
         Text t1 = new Text();
         t1.setFont(commonFont);
@@ -135,6 +147,9 @@ class CustomConsole {
                 link.makeSmooth(LINK_COLOR_CHANGE_TIME);
                 flow.getChildren().add(link);
 
+                if (word.contains(".png") || word.contains(".jpg") || word.contains(".gif") || word.contains(".jpeg"))
+                    message.tryToAddImage(word);
+
             } else
                 buffer.append(word);
 
@@ -150,18 +165,19 @@ class CustomConsole {
             flow.getChildren().add(bufferedText);
         }
 
-        flow.setOpacity(0.0);
+        message.addText(flow);
+        message.build();
 
-        textBox.getChildren().add(flow);
+        textBox.getChildren().add(message);
 
-        animateTextAppear(flow);
-
+        message.setOpacity(0.0);
+        animateAppear(message);
 
         slowScrollToBottom();
 
     }
 
-    private void animateTextAppear(Node node) {
+    private void animateAppear(Node node) {
 
         GaussianBlur blur = new GaussianBlur();
 
@@ -194,18 +210,28 @@ class CustomConsole {
 
     void serverMessageAppend(String text) {
 
+        Message message = new Message("[SERVER]", Color.TRANSPARENT);
+
         TextFlow flow = new TextFlow();
 
+        if (DEBUG) {
+            flow.setStyle("-fx-border-color: #81ffd9");
+        }
+
         Text t1 = new Text();
-        t1.setFont(biggerFont);
+        t1.setFont(serverFont);
         t1.setText(text);
         t1.setStyle("-fx-fill: LightSkyBlue;");
 
         flow.getChildren().add(t1);
 
-        flow.setOpacity(0.0);
-        textBox.getChildren().add(flow);
-        animateTextAppear(flow);
+        message.setOpacity(0.0);
+        message.addText(flow);
+        message.build();
+
+        textBox.getChildren().add(message);
+
+        animateAppear(message);
 
         slowScrollToBottom();
 

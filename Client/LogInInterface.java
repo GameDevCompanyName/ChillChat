@@ -3,24 +3,28 @@ package ChillChat.Client;
 import ChillChat.Client.Console.ConsoleClient;
 import ChillChat.Client.Console.LogInProcedure;
 import ChillChat.Client.Utilites.Constants;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 public class LogInInterface {
 
     private LogInProcedure logIn;
 
-    private StackPane interfacePane;
     private VBox box;
     private TextField loginField;
     private PasswordField passwordField;
@@ -51,60 +55,122 @@ public class LogInInterface {
         this.clientWindow = clientWindow;
         this.logIn = logIn;
 
-        Font title = new Font("Century Gothic", 30);
-        Font common = new Font("Century Gothic", 12);
+        Font title = new Font("Century Gothic Bold", 50);
+        Font common = new Font("Century Gothic", 16);
+        Font input = new Font("Century Gothic", 20);
         Font error = new Font("Century Gothic", 22);
 
         this.box = new VBox();
         loginField = new TextField();
         passwordField = new PasswordField();
-        interfacePane = new StackPane();
         acceptButton = new Button("CHILLAX");
 
+        Background background = new Background(new BackgroundFill(Color.rgb(200, 200, 200, 0.3), CornerRadii.EMPTY, Insets.EMPTY));
+        box.setBackground(background);
+
         titleText = new Label( "ChillChat");
+        //setNeonEffect(titleText);
         inputLogin = new Label("L O G I N");
         inputPassword = new Label("P A S S");
         loginState = new Label("");
 
+        loginField.setStyle("-fx-background-color: transparent; -fx-text-fill: #d0cffa");
+        loginField.setFont(input);
+        loginField.setScaleX(1.5);
+        loginField.setScaleY(1.5);
+        loginField.maxWidthProperty().bind(titleText.widthProperty());
+
+        passwordField.setStyle("-fx-background-color: transparent; -fx-text-fill: #d0cffa");
+        passwordField.setScaleX(1.5);
+        passwordField.setScaleY(1.5);
+        passwordField.maxWidthProperty().bind(titleText.widthProperty());
+
+        loginField.setFont(common);
+        passwordField.setFont(common);
         titleText.setFont(title);
+
         inputLogin.setFont(common);
         inputPassword.setFont(common);
         loginState.setFont(error);
+
+        Glow glow = new Glow(1.0);
+        loginField.setEffect(glow);
+        passwordField.setEffect(glow);
+
         loginState.setTextFill(Color.RED);
+        inputLogin.setStyle("-fx-text-fill: #d0cffa");
+        inputPassword.setStyle("-fx-text-fill: #d0cffa");
+        titleText.setStyle("-fx-text-fill: #b6c4fa");
 
         acceptButton.setOnMouseClicked(e -> tryToLogIn());
 
-        box.getChildren().addAll(titleText, inputLogin, loginField,
+        /*box.getChildren().addAll(titleText, inputLogin, loginField,
                 inputPassword, passwordField, acceptButton, loginState);
+                */
+        box.getChildren().addAll(titleText, inputLogin, loginField,
+                inputPassword, passwordField, loginState);
         box.setAlignment(Pos.CENTER);
-        box.prefWidthProperty().bind(interfacePane.widthProperty());
+        //box.prefWidthProperty().bind(interfacePane.widthProperty());
         box.setSpacing(10);
 
-        interfacePane.prefWidthProperty().bind(parentPane.widthProperty().divide(2.5));
-        interfacePane.prefHeightProperty().bind(parentPane.heightProperty().divide(2.5));
-        interfacePane.setMaxSize(350, 250);
+        box.maxWidthProperty().bind(titleText.widthProperty().multiply(1.5));
+        box.maxHeightProperty().bind(loginState.layoutYProperty().subtract(titleText.layoutYProperty().subtract(15)));
 
-        loginField.prefWidthProperty().bind(box.widthProperty().divide(2));
-        passwordField.prefWidthProperty().bind(box.widthProperty().divide(2));
-        loginField.maxWidthProperty().bind(box.widthProperty().divide(2));
-        passwordField.maxWidthProperty().bind(box.widthProperty().divide(2));
+        //interfacePane.prefWidthProperty().bind(parentPane.widthProperty().divide(2.5));
+        //interfacePane.prefHeightProperty().bind(parentPane.heightProperty().divide(2.5));
+        //interfacePane.setMaxSize(350, 250);
+
+        //loginField.prefWidthProperty().bind(box.widthProperty().divide(2));
+        //passwordField.prefWidthProperty().bind(box.widthProperty().divide(2));
+        //loginField.maxWidthProperty().bind(box.widthProperty().divide(2));
+        //passwordField.maxWidthProperty().bind(box.widthProperty().divide(2));
 
         loginField.setAlignment(Pos.CENTER);
         passwordField.setAlignment(Pos.CENTER);
 
-
-        interfacePane.getChildren().add(box);
         StackPane.setAlignment(box, Pos.CENTER);
 
         if (Constants.DEBUG){
-            interfacePane.setStyle("-fx-border-color: red");
             box.setStyle("-fx-border-color: blue");
         }
+
+
+
+        smoothAppear(box, 1.5);
+
+
+
+    }
+
+    private void smoothAppear(Node node, Double secs) {
+
+        Blend blend = new Blend();
+        blend.setMode(BlendMode.MULTIPLY);
+
+        GaussianBlur gaussianBlur = new GaussianBlur(10.0);
+        blend.setTopInput(gaussianBlur);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(8.0);
+        dropShadow.setOffsetX(10.0);
+        dropShadow.setOffsetY(10.0);
+        Color color = Color.color(0.1, 0.1, 0.1, 0.4);
+        dropShadow.setColor(color);
+        dropShadow.setInput(box.getEffect());
+
+        blend.setBottomInput(dropShadow);
+
+        node.setEffect(blend);
+
+        Timeline appear = new Timeline();
+        appear.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(gaussianBlur.radiusProperty(), 30.0)));
+        appear.getKeyFrames().add(new KeyFrame(Duration.seconds(secs), new KeyValue(gaussianBlur.radiusProperty(), 0)));
+        appear.play();
 
     }
 
     Pane getContainer() {
-        return interfacePane;
+        return box;
     }
 
     void setTextColor(Color color){

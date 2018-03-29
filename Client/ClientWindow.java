@@ -113,9 +113,9 @@ public class ClientWindow {
         centralPane.setOpacity(1);
 
         ImageView background = new ImageView(Utils.getRandomLogInBackground());
-        double scaleCoef = (350 * 500) / background.getImage().getWidth();
-        background.scaleXProperty().bind(centralPane.widthProperty().divide(scaleCoef));
-        background.scaleYProperty().bind(centralPane.widthProperty().divide(scaleCoef));
+        double scaleCoef = (350 * 500 * 300) / (background.getImage().getWidth() * background.getImage().getHeight());
+        background.scaleXProperty().bind(centralPane.widthProperty().multiply(centralPane.heightProperty().divide(500*scaleCoef)));
+        background.scaleYProperty().bind(centralPane.widthProperty().multiply(centralPane.heightProperty().divide(500*scaleCoef)));
         background.setOpacity(0);
 
         consoleClient = new ConsoleClient(this);
@@ -127,8 +127,8 @@ public class ClientWindow {
 
         consoleClient.getLogIn().setLogInInterface(logInInterface);
 
-        logInBox.maxWidthProperty().bind(centralPane.widthProperty());
-        logInBox.maxHeightProperty().bind(centralPane.heightProperty());
+        //logInBox.maxWidthProperty().bind(centralPane.widthProperty());
+        //logInBox.maxHeightProperty().bind(centralPane.heightProperty());
 
         if (DEBUG) {
             logInBox.setStyle("-fx-border-color: green");
@@ -149,7 +149,7 @@ public class ClientWindow {
 
         FadeTransition backFadeIn = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME * 2), background);
         backFadeIn.setFromValue(0);
-        backFadeIn.setToValue(1);
+        backFadeIn.setToValue(0.6);
 
         centralPane.prefWidthProperty().bind(clientScene.widthProperty());
         centralPane.prefHeightProperty().bind(clientScene.heightProperty());
@@ -180,6 +180,7 @@ public class ClientWindow {
     }
 
     private void createMessenger(){
+
         StackPane centralPane = new StackPane();
 
         centralPane.prefWidthProperty().bind(clientScene.widthProperty());
@@ -187,8 +188,8 @@ public class ClientWindow {
         centralPane.maxWidthProperty().bind(clientScene.widthProperty());
         centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
-        Messenger messenger = new Messenger(consoleClient, centralPane, clientScene, client, this, client);
-        this.messenger = messenger;
+        this.messenger = new Messenger(consoleClient, centralPane, clientScene, client, this, client);
+
     }
 
     private void changeToMessenger() {
