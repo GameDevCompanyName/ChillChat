@@ -147,6 +147,9 @@ class CustomConsole {
                 link.makeSmooth(LINK_COLOR_CHANGE_TIME);
                 flow.getChildren().add(link);
 
+                if (word.contains("youtube") || word.contains("youtu.be") || word.contains(".webm") || word.contains(".mp4") || word.contains(".flv"))
+                    message.tryToAddVideo(word);
+
                 if (word.contains(".png") || word.contains(".jpg") || word.contains(".gif") || word.contains(".jpeg"))
                     message.tryToAddImage(word);
 

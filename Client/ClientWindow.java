@@ -47,7 +47,7 @@ public class ClientWindow {
         clientScene = new Scene(totalGroup,
                 Screen.getPrimary().getBounds().getWidth(),
                 Screen.getPrimary().getBounds().getHeight(),
-                Color.web("#160000"));
+                Color.web("#121826"));
 
         clientStage.setScene(clientScene);
 
