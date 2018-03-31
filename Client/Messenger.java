@@ -194,7 +194,7 @@ class Messenger {
     }
 
     void displayServerMessage(String text) {
-        console.serverMessageAppend("[SERVER]: " + text);
+        console.serverMessageAppend(text);
     }
 
     public void displayUserKicked(String login, String reason) {
