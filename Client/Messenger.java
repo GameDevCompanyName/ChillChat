@@ -18,6 +18,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import static ChillChat.Client.Utilites.Constants.TEXT_DISAPPEAR_TIME;
 
 class Messenger {
@@ -48,6 +52,10 @@ class Messenger {
             if (event.getCode().equals(KeyCode.ESCAPE)){
                 clientWindow.goToLoginScreen(false);
             }
+
+            if (event.getCode().equals(KeyCode.DELETE)){
+                console.deleteSelectedMessages();
+            }
         });
 
         this.consoleClient = consoleClient;
@@ -72,7 +80,13 @@ class Messenger {
         textBlur = new GaussianBlur();
         textBlur.setRadius(0.0);
 
-        Font inputFieldFont = new Font("Courier New", 18);
+        Font inputFieldFont = null;
+        try {
+            inputFieldFont = Font.loadFont(new FileInputStream(new File("resources/commonFont.ttf")), 28);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        ;
         inputField = new TextField();
         inputField.setFont(inputFieldFont);
         inputField.setEffect(textBlur);
@@ -186,7 +200,7 @@ class Messenger {
     }
 
     void displayMessage(String name, String text, String color) {
-        console.textAppend(name, text, color);
+        console.userTextAppend(name, text, color);
     }
 
     private void sendMessage(String text) {

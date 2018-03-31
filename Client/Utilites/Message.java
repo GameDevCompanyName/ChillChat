@@ -18,32 +18,42 @@ import javafx.scene.text.TextFlow;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 
-import static ChillChat.Client.Utilites.Constants.DEBUG;
-import static ChillChat.Client.Utilites.Constants.LINK_COLOR_CHANGE_TIME;
-import static ChillChat.Client.Utilites.Constants.TEXT_APPEAR_TIME;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import static ChillChat.Client.Utilites.Constants.*;
 
 public class Message extends VBox {
 
     public static Client client;
     public static Pane parent;
 
-    public static Font commonFont = new Font("Courier New", 18);
-    public static Font nameFont = new Font("Courier New Bold Italic", 19);
-    public static Font serverFont = new Font("Courier New Italic", 22);
+    //public static Font commonFont = new Font("Courier New", 18);
+    public static Font commonFont;
+    public static Font nameFont;
+    public static Font serverNameFont;
+    public static Font serverTextFont;
 
     private String senderName;
     private String senderColor;
     private MessageType type;
 
+    private Boolean selected;
+
     private VBox textFlows;
     private ImageView imageView;
     private Color backColor;
+    private Color selectedBackColor;
     private Glow glow;
     private WebView video;
 
     public Message(String senderName, String senderColor){
 
         this.type = MessageType.COMMON_MESSAGE;
+
+        backColor = Color.rgb(100, 100, 100, 0.15);
+        selectedBackColor = Color.color(0.15, 0.25, 0.9, 0.4);
 
         createTextFlows();
 
@@ -74,6 +84,8 @@ public class Message extends VBox {
                 //TODO
         }
 
+        backColor = Color.color(0.9, 0.15, 0.25, 0.18);
+
         if (DEBUG)
             this.setStyle("-fx-border-color: #FF765B");
 
@@ -83,6 +95,17 @@ public class Message extends VBox {
 
     public static void setParentNode(Pane parentNode) {
         parent = parentNode;
+    }
+
+    public static void loadFonts(){
+        try {
+            commonFont = Font.loadFont(new FileInputStream(new File("resources/commonFont.ttf")), 24);
+            nameFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 22);
+            serverNameFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 24);
+            serverTextFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 20);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     private void createTextFlows() {
@@ -120,7 +143,7 @@ public class Message extends VBox {
 
         Font font = commonFont;
         if (type == MessageType.SERVER_MESSAGE)
-            font = serverFont;
+            font = serverTextFont;
 
         TextFlow textFlow = new TextFlow();
         textFlow.setEffect(glow);
@@ -167,7 +190,10 @@ public class Message extends VBox {
 
         if (buffer.length() != 0){
             Text bufferedText = new Text();
-            bufferedText.setStyle("-fx-fill: Lavender;");
+            if (type == MessageType.COMMON_MESSAGE)
+                bufferedText.setStyle("-fx-fill: Lavender;");
+            if (type == MessageType.SERVER_MESSAGE)
+                bufferedText.setStyle("-fx-fill: LightSkyBlue");
             bufferedText.setText(buffer.toString());
             bufferedText.setFont(font);
             textFlow.getChildren().add(bufferedText);
@@ -219,13 +245,23 @@ public class Message extends VBox {
 
     public void build(){
 
+        selected = false;
+
         Text nickname = new Text(senderName);
         nickname.setFont(nameFont);
         if (type == MessageType.SERVER_MESSAGE)
-            nickname.setFont(serverFont);
+            nickname.setFont(serverNameFont);
         colorize(nickname);
 
-        nickname.setEffect(glow);
+
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(2);
+        dropShadow.setOffsetY(3);
+        dropShadow.setOffsetX(3);
+        dropShadow.setColor(Color.color(0.05, 0.05, 0.05, 0.6));
+        dropShadow.setInput(glow);
+        nickname.setEffect(dropShadow);
 
         this.setPadding(new Insets(4,4, 4, 4));
 
@@ -380,6 +416,20 @@ public class Message extends VBox {
 
     public String getSenderName() {
         return senderName;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void select() {
+        this.setBackground(new Background(new BackgroundFill(selectedBackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        selected = true;
+    }
+
+    public void unSelect() {
+        this.setBackground(new Background(new BackgroundFill(backColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        selected = false;
     }
 
     public enum MessageType{

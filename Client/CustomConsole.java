@@ -16,6 +16,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static ChillChat.Client.Utilites.Constants.DEBUG;
 import static ChillChat.Client.Utilites.Constants.TEXT_APPEAR_TIME;
 
@@ -27,12 +30,14 @@ class CustomConsole {
     private VBox textBox;
 
     private Message lastMessage;
+    private List<Message> selectedMessages;
 
     private Font commonFont;
     private Font serverFont;
 
     CustomConsole(StackPane parentPane, Client client){
 
+        this.selectedMessages = new ArrayList<>();
         this.client = client;
         mainBox = new StackPane();
         textBox = new VBox();
@@ -78,7 +83,7 @@ class CustomConsole {
         animation.play();
     }
 
-    void textAppend(String name, String text, String color){
+    void userTextAppend(String name, String text, String color){
 
         if (lastMessage != null)
         {
@@ -101,6 +106,16 @@ class CustomConsole {
 
         message.setOpacity(0.0);
         animateAppear(message);
+
+        message.setOnMouseClicked(e -> {
+            if (!message.isSelected()){
+                message.select();
+                selectedMessages.add(message);
+            } else {
+                message.unSelect();
+                selectedMessages.remove(message);
+            }
+        });
 
         slowScrollToBottom();
 
@@ -174,12 +189,24 @@ class CustomConsole {
         slideRight.getKeyFrames().add(
                 new KeyFrame(Duration.seconds(0.0), new KeyValue(message.translateXProperty(), message.getTranslateX())));
         slideRight.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(TEXT_APPEAR_TIME * 2), new KeyValue(message.translateXProperty(), message.getTranslateX() + 2000)));
+                new KeyFrame(Duration.seconds(TEXT_APPEAR_TIME), new KeyValue(message.translateXProperty(), message.getTranslateX() + 2000)));
         slideRight.setOnFinished(e -> {
-            textBox.getChildren().remove(message);
+            if (textBox.getChildren().contains(message))
+                textBox.getChildren().remove(message);
         });
         slideRight.play();
 
+    }
+
+    public void deleteSelectedMessages() {
+        if (selectedMessages.isEmpty())
+            return;
+
+        for (Message message: selectedMessages) {
+            animateSlideRightDissapear(message);
+        }
+
+        selectedMessages.clear();
     }
 
 }
