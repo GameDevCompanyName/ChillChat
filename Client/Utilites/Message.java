@@ -6,8 +6,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
+import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -29,7 +28,6 @@ public class Message extends VBox {
     public static Client client;
     public static Pane parent;
 
-    //public static Font commonFont = new Font("Courier New", 18);
     public static Font commonFont;
     public static Font nameFont;
     public static Font serverNameFont;
@@ -39,14 +37,18 @@ public class Message extends VBox {
     private String senderColor;
     private MessageType type;
 
+    private BackgroundFill backgroundFill;
+
     private Boolean selected;
 
     private VBox textFlows;
     private ImageView imageView;
     private Color backColor;
     private Color selectedBackColor;
-    private Glow glow;
     private WebView video;
+
+    private Glow glow;
+    private Timeline clickedAnimation;
 
     public Message(String senderName, String senderColor){
 
@@ -65,9 +67,10 @@ public class Message extends VBox {
             this.setStyle("-fx-border-color: #FF765B");
 
 
-        setGlowEffect();
+        setEffects();
 
     }
+
 
     public Message(String senderName, MessageType type){
 
@@ -90,7 +93,8 @@ public class Message extends VBox {
             this.setStyle("-fx-border-color: #FF765B");
 
 
-        setGlowEffect();
+        setEffects();
+
     }
 
     public static void setParentNode(Pane parentNode) {
@@ -114,10 +118,42 @@ public class Message extends VBox {
         textFlows.setPadding(new Insets(3));
     }
 
-    private void setGlowEffect() {
+    private void setEffects() {
 
         glow = new Glow();
+        glow.setLevel(1.0);
+
         this.setEffect(glow);
+
+
+        clickedAnimation = new Timeline();
+
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(scaleXProperty(), 0.965)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.3), new KeyValue(scaleXProperty(), 1.0)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(scaleYProperty(), 0.965)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.3), new KeyValue(scaleYProperty(), 1.0)));
+
+        /*
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.urxProperty(), 80f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.urxProperty(), 0f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.uryProperty(), 80f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.uryProperty(), 0f)));
+
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.lrxProperty(), 80f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.lrxProperty(), 0f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.lryProperty(), 80f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.lryProperty(), 0f)));
+
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.ulxProperty(), 0f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.ulxProperty(), 0f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.ulyProperty(), 0f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.ulyProperty(), 0f)));
+
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.llxProperty(), 0f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.llxProperty(), 0f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.llyProperty(), 0f)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.llyProperty(), 0f)));
+        */
 
         Timeline glowUp = new Timeline();
         glowUp.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(glow.levelProperty(), 0.2)));
@@ -265,16 +301,17 @@ public class Message extends VBox {
 
         this.setPadding(new Insets(4,4, 4, 4));
 
+        BackgroundFill bf = new BackgroundFill(backColor, CornerRadii.EMPTY, Insets.EMPTY);
+        this.backgroundFill = bf;
+
+        this.setBackground(new Background(bf));
+
+
         if (backColor != null)
             this.setBackground(
                     new Background(
                             new BackgroundFill(
                                     backColor, CornerRadii.EMPTY, Insets.EMPTY)));
-        else
-            this.setBackground(
-                    new Background(
-                            new BackgroundFill(
-                                    Color.rgb(100, 100, 100, 0.15), CornerRadii.EMPTY, Insets.EMPTY)));
 
         this.setSpacing(2);
         this.prefWidthProperty().bind(textFlows.widthProperty());
@@ -430,6 +467,10 @@ public class Message extends VBox {
     public void unSelect() {
         this.setBackground(new Background(new BackgroundFill(backColor, CornerRadii.EMPTY, Insets.EMPTY)));
         selected = false;
+    }
+
+    public void playPressedAnimation() {
+        clickedAnimation.playFromStart();
     }
 
     public enum MessageType{

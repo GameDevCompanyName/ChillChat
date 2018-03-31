@@ -108,6 +108,8 @@ class CustomConsole {
         animateAppear(message);
 
         message.setOnMouseClicked(e -> {
+
+            message.playPressedAnimation();
             if (!message.isSelected()){
                 message.select();
                 selectedMessages.add(message);
@@ -115,6 +117,7 @@ class CustomConsole {
                 message.unSelect();
                 selectedMessages.remove(message);
             }
+
         });
 
         slowScrollToBottom();
@@ -205,6 +208,9 @@ class CustomConsole {
         for (Message message: selectedMessages) {
             animateSlideRightDissapear(message);
         }
+
+        if (selectedMessages.contains(lastMessage))
+            lastMessage = null;
 
         selectedMessages.clear();
     }
