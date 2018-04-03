@@ -6,11 +6,12 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.effect.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -19,11 +20,12 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static ChillChat.Client.Utilites.Constants.*;
 
-public class Message extends VBox {
+public class Message extends StackPane {
 
     public static Client client;
     public static Pane parent;
@@ -36,8 +38,7 @@ public class Message extends VBox {
     private String senderName;
     private String senderColor;
     private MessageType type;
-
-    private BackgroundFill backgroundFill;
+    private VBox content;
 
     private Boolean selected;
 
@@ -45,56 +46,78 @@ public class Message extends VBox {
     private ImageView imageView;
     private Color backColor;
     private Color selectedBackColor;
+    private Color nameColor;
     private WebView video;
+    private Rectangle backgroundRect;
 
-    private Glow glow;
+    //private Glow glow;
     private Timeline clickedAnimation;
 
     public Message(String senderName, String senderColor){
 
-        this.type = MessageType.COMMON_MESSAGE;
+        this.setAlignment(Pos.TOP_LEFT);
 
-        backColor = Color.rgb(100, 100, 100, 0.15);
-        selectedBackColor = Color.color(0.15, 0.25, 0.9, 0.4);
+        this.content = new VBox();
+
+        initRectangle();
+
+        this.type = MessageType.COMMON_MESSAGE;
 
         createTextFlows();
 
         this.senderColor = senderColor;
+        colorize(senderColor);
+
+        backColor = Color.color(nameColor.getRed(), nameColor.getGreen(), nameColor.getBlue(), 0.1);
+        selectedBackColor = Color.color(0.15, 0.25, 0.85, 0.4);
 
         this.senderName = senderName;
 
-        if (DEBUG)
+        if (DEBUG){
             this.setStyle("-fx-border-color: #FF765B");
-
+            content.setStyle("-fx-border-color: RED");
+        }
 
         setEffects();
 
     }
 
-
     public Message(String senderName, MessageType type){
 
-        this.type = type;
+        this.setAlignment(Pos.TOP_LEFT);
+
+        this.content = new VBox();
+
+        initRectangle();
+
+        this.type = MessageType.SERVER_MESSAGE;
 
         createTextFlows();
 
-        switch (type){
-            case SERVER_MESSAGE:
-                this.backColor = Color.TRANSPARENT;
-                this.senderName = senderName;
-                this.senderColor = "9";
-                break;
-                //TODO
-        }
+        this.senderColor = "9";
+        colorize(senderColor);
 
-        backColor = Color.color(0.9, 0.15, 0.25, 0.18);
+        backColor = Color.color(nameColor.getRed(), nameColor.getGreen(), nameColor.getBlue(), 0.1);
+        //selectedBackColor = Color.color(0.15, 0.25, 0.85, 0.4);
 
-        if (DEBUG)
+        this.senderName = "SERVER";
+
+        if (DEBUG){
             this.setStyle("-fx-border-color: #FF765B");
-
+            content.setStyle("-fx-border-color: RED");
+        }
 
         setEffects();
 
+    }
+
+    private void initRectangle() {
+        this.backgroundRect = new Rectangle();
+        backgroundRect.widthProperty().bind(content.widthProperty());
+        backgroundRect.heightProperty().bind(content.heightProperty());
+        backgroundRect.setArcHeight(30);
+        backgroundRect.setArcWidth(16);
+        this.getChildren().add(backgroundRect);
     }
 
     public static void setParentNode(Pane parentNode) {
@@ -120,58 +143,39 @@ public class Message extends VBox {
 
     private void setEffects() {
 
-        glow = new Glow();
-        glow.setLevel(1.0);
+        //glow = new Glow();
+        //glow.setLevel(1.0);
 
-        this.setEffect(glow);
-
+        //content.setEffect(glow);
 
         clickedAnimation = new Timeline();
 
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(scaleXProperty(), 0.965)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.3), new KeyValue(scaleXProperty(), 1.0)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(scaleYProperty(), 0.965)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.3), new KeyValue(scaleYProperty(), 1.0)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(scaleXProperty(), 1.0)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(MESSAGE_CLICK_ANIMATION_TIME/4), new KeyValue(scaleXProperty(), 0.965)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(MESSAGE_CLICK_ANIMATION_TIME), new KeyValue(scaleXProperty(), 1.0)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(scaleYProperty(), 1.0)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(MESSAGE_CLICK_ANIMATION_TIME/4), new KeyValue(scaleYProperty(), 0.965)));
+        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(MESSAGE_CLICK_ANIMATION_TIME), new KeyValue(scaleYProperty(), 1.0)));
 
-        /*
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.urxProperty(), 80f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.urxProperty(), 0f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.uryProperty(), 80f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.uryProperty(), 0f)));
-
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.lrxProperty(), 80f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.lrxProperty(), 0f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.lryProperty(), 80f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.lryProperty(), 0f)));
-
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.ulxProperty(), 0f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.ulxProperty(), 0f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.ulyProperty(), 0f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.ulyProperty(), 0f)));
-
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.llxProperty(), 0f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.llxProperty(), 0f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(pt.llyProperty(), 0f)));
-        clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(1.0), new KeyValue(pt.llyProperty(), 0f)));
-        */
-
-        Timeline glowUp = new Timeline();
-        glowUp.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(glow.levelProperty(), 0.2)));
-        glowUp.getKeyFrames().add(new KeyFrame(Duration.seconds(0.15), new KeyValue(glow.levelProperty(), 1.0)));
-
-        Timeline glowDown = new Timeline();
-        glowDown.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(glow.levelProperty(), 0.7)));
-        glowDown.getKeyFrames().add(new KeyFrame(Duration.seconds(0.15), new KeyValue(glow.levelProperty(), 0.0)));
-
-        setOnMouseEntered(e -> {
-            glowDown.stop();
-            glowUp.play();
-        });
-
-        setOnMouseExited(e -> {
-            glowUp.stop();
-            glowDown.play();
-        });
+//        Timeline glowUp = new Timeline();
+//        glowUp.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(glow.levelProperty(), 0.2)));
+//        glowUp.getKeyFrames().add(new KeyFrame(Duration.seconds(0.15), new KeyValue(glow.levelProperty(), 1.0)));
+//
+//        Timeline glowDown = new Timeline();
+//        glowDown.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(glow.levelProperty(), 0.7)));
+//        glowDown.getKeyFrames().add(new KeyFrame(Duration.seconds(0.15), new KeyValue(glow.levelProperty(), 0.0)));
+//
+//        setOnMouseEntered(e -> {
+//            glowDown.stop();
+//            glowUp.play();
+//        });
+//
+//        setOnMouseExited(e -> {
+//            glowUp.stop();
+//            glowDown.play();
+//        });
+//
+//        glowDown.play();
 
     }
 
@@ -181,8 +185,16 @@ public class Message extends VBox {
         if (type == MessageType.SERVER_MESSAGE)
             font = serverTextFont;
 
+        Font boldTextFont;
+
+        try {
+            boldTextFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 16);
+        } catch (FileNotFoundException e) {
+            boldTextFont = commonFont;
+        }
+
         TextFlow textFlow = new TextFlow();
-        textFlow.setEffect(glow);
+        //textFlow.setEffect(glow);
 
         if (DEBUG) {
             textFlow.setStyle("-fx-border-color: #81ffd9");
@@ -203,22 +215,46 @@ public class Message extends VBox {
                     buffer = new StringBuilder();
                 }
 
-                Hyperlink link = new Hyperlink(word, client);
-                link.setFont(font);
-                link.makeSmooth(LINK_COLOR_CHANGE_TIME);
-                textFlow.getChildren().add(link);
 
+                if (word.contains(".png")
+                        || word.contains(".jpg")
+                        || word.contains(".gif")
+                        || word.contains(".jpeg")
+                        || word.contains(".bmp"))
+                    this.tryToAddImage(word);
+                else {
+                    Hyperlink link = new Hyperlink(word, client);
+                    link.setFont(font);
+                    link.makeSmooth(LINK_COLOR_CHANGE_TIME);
+                    textFlow.getChildren().add(link);
+                }
 
                 /*
                 if (word.contains("youtube") || word.contains("youtu.be") || word.contains(".webm") || word.contains(".mp4") || word.contains(".flv"))
                     message.tryToAddVideo(word);
-
-                if (word.contains(".png") || word.contains(".jpg") || word.contains(".gif") || word.contains(".jpeg"))
-                    message.tryToAddImage(word);
                 */
 
-            } else
-                buffer.append(word);
+
+            } else {
+                if (word.charAt(0) == '@'){
+                    if (buffer.length() != 0){
+                        Text bufferedText = new Text();
+                        colorizeText(bufferedText);
+                        bufferedText.setText(buffer.toString());
+                        bufferedText.setFont(font);
+                        textFlow.getChildren().add(bufferedText);
+                        buffer = new StringBuilder();
+                    }
+
+                    Text boldText = new Text(word.substring(1));
+                    colorizeText(boldText);
+                    boldText.setFont(boldTextFont);
+                    textFlow.getChildren().add(boldText);
+
+                } else
+                    buffer.append(word);
+            }
+
 
             if (i != parsedText.length - 1)
                 buffer.append(" ");
@@ -271,11 +307,26 @@ public class Message extends VBox {
 
     public void tryToAddImage(String path){
 
+        imageView = new ImageView();
         Image image = new Image(path);
-        imageView = new ImageView(image);
+        imageView.setImage(image);
         double scaleCoef = 380/image.getWidth();
         imageView.setFitHeight(image.getHeight()*scaleCoef);
         imageView.setFitWidth(image.getWidth()*scaleCoef);
+
+        StackPane imagePane = new StackPane();
+        imagePane.maxWidthProperty().bind(imageView.fitWidthProperty());
+        imagePane.maxHeightProperty().bind(imageView.fitHeightProperty());
+
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.color(0, 0, 0, 0.35));
+        shadow.setOffsetX(5);
+        shadow.setOffsetY(5);
+        shadow.setRadius(5);
+        imagePane.setEffect(shadow);
+        imagePane.getChildren().add(imageView);
+        textFlows.getChildren().add(imagePane);
+        //createTextFlows();
 
     }
 
@@ -287,7 +338,7 @@ public class Message extends VBox {
         nickname.setFont(nameFont);
         if (type == MessageType.SERVER_MESSAGE)
             nickname.setFont(serverNameFont);
-        colorize(nickname);
+        nickname.setFill(nameColor);
 
 
 
@@ -296,30 +347,19 @@ public class Message extends VBox {
         dropShadow.setOffsetY(3);
         dropShadow.setOffsetX(3);
         dropShadow.setColor(Color.color(0.05, 0.05, 0.05, 0.6));
-        dropShadow.setInput(glow);
+        //dropShadow.setInput(glow);
         nickname.setEffect(dropShadow);
 
-        this.setPadding(new Insets(4,4, 4, 4));
+        content.setPadding(new Insets(4,4, 4, 4));
 
-        BackgroundFill bf = new BackgroundFill(backColor, CornerRadii.EMPTY, Insets.EMPTY);
-        this.backgroundFill = bf;
+        setDefaultBackground();
 
-        this.setBackground(new Background(bf));
+        content.setSpacing(2);
+        content.prefWidthProperty().bind(textFlows.widthProperty());
+        content.setAlignment(Pos.TOP_LEFT);
 
-
-        if (backColor != null)
-            this.setBackground(
-                    new Background(
-                            new BackgroundFill(
-                                    backColor, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        this.setSpacing(2);
-        this.prefWidthProperty().bind(textFlows.widthProperty());
-        this.setAlignment(Pos.TOP_LEFT);
-
-        VBox nameBox = new VBox();
+        StackPane nameBox = new StackPane();
         nameBox.setPadding(new Insets(1));
-        nameBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
         nameBox.setAlignment(Pos.CENTER);
         nameBox.getChildren().add(nickname);
         nameBox.prefHeightProperty().set((
@@ -328,113 +368,46 @@ public class Message extends VBox {
         nameBox.maxWidthProperty().set((
                 nickname.getLayoutBounds().getMaxX() - nickname.getLayoutBounds().getMinX()
         ) + 10);
-        this.getChildren().addAll(nameBox, textFlows);
+        content.getChildren().addAll(nameBox, textFlows);
 
-//        if (type == MessageType.COMMON_MESSAGE){
-//
-//            VBox nameBox = new VBox();
-//            nameBox.setPadding(new Insets(1));
-//            nameBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
-//            nameBox.setAlignment(Pos.CENTER);
-//            nameBox.getChildren().add(nickname);
-//            nameBox.prefHeightProperty().set((
-//                    nickname.getLayoutBounds().getMaxY() - nickname.getLayoutBounds().getMinY()
-//                    ) + 6);
-//            nameBox.maxWidthProperty().set((
-//                    nickname.getLayoutBounds().getMaxX() - nickname.getLayoutBounds().getMinX()
-//            ) + 10);
-//            this.getChildren().addAll(nameBox, textFlows);
-//        }
-//        if (type == MessageType.SERVER_MESSAGE){
-//            TextFlow textFlow = new TextFlow();
-//            textFlow.getChildren().addAll(nickname, this.textFlows);
-//            this.getChildren().add(textFlow);
-//        }
-
-        if (imageView != null || video != null){
-
-            VBox images = new VBox();
-            images.setPadding(new Insets(10));
-
-            if (imageView != null){
-                StackPane imagePane = new StackPane();
-                imagePane.maxWidthProperty().bind(imageView.fitWidthProperty());
-                imagePane.maxHeightProperty().bind(imageView.fitHeightProperty());
-                imagePane.setStyle("-fx-border-color: #3b1319;\n" +
-                        "    -fx-border-style: solid;\n" +
-                        "    -fx-border-width: 1.5;");
-
-                DropShadow shadow = new DropShadow();
-                shadow.setColor(Color.color(0, 0, 0, 0.35));
-                shadow.setOffsetX(5);
-                shadow.setOffsetY(5);
-                shadow.setRadius(5);
-                imagePane.setEffect(shadow);
-                imagePane.getChildren().add(imageView);
-                images.getChildren().add(imagePane);
-            }
-
-            if (video != null){
-                StackPane videoPane = new StackPane();
-                videoPane.maxWidthProperty().bind(video.widthProperty());
-                videoPane.maxHeightProperty().bind(video.heightProperty());
-                videoPane.setStyle("-fx-border-color: #3b1319;\n" +
-                        "    -fx-border-style: solid;\n" +
-                        "    -fx-border-width: 1.5;");
-
-                DropShadow shadow = new DropShadow();
-                shadow.setColor(Color.color(0, 0, 0, 0.35));
-                shadow.setOffsetX(5);
-                shadow.setOffsetY(5);
-                shadow.setRadius(5);
-                videoPane.setEffect(shadow);
-                videoPane.getChildren().add(video);
-                images.getChildren().add(videoPane);
-            }
-
-
-
-            images.setSpacing(10);
-            if (DEBUG)
-                images.setStyle("-fx-border-color: BLUE");
-            this.getChildren().add(images);
-
-        }
+        this.getChildren().add(content);
 
     }
 
-    private void colorize(Text nickname) {
+
+
+    private void colorize(String nickname) {
 
         switch (senderColor){
             case "1":
-                nickname.setStyle("-fx-fill: #f44336;");
+                nameColor = Color.web("#f44336");
                 break;
             case "2":
-                nickname.setStyle("-fx-fill: #3f51b5;");
+                nameColor = Color.web("#3f51b5");
                 break;
             case "3":
-                nickname.setStyle("-fx-fill: #29b6f6;");
+                nameColor = Color.web("#29b6f6");
                 break;
             case "4":
-                nickname.setStyle("-fx-fill: #ff5722;");
+                nameColor = Color.web("#ff5722");
                 break;
             case "5":
-                nickname.setStyle("-fx-fill: #4caf50;");
+                nameColor = Color.web("#4caf50");
                 break;
             case "6":
-                nickname.setStyle("-fx-fill: #8bc34a;");
+                nameColor = Color.web("#8bc34a");
                 break;
             case "7":
-                nickname.setStyle("-fx-fill: #ffeb3b;");
+                nameColor = Color.web("#ffeb3b");
                 break;
             case "8":
-                nickname.setStyle("-fx-fill: #ec407a;");
+                nameColor = Color.web("#ec407a");
                 break;
             case "9":
-                nickname.setStyle("-fx-fill: LightSkyBlue;");
+                nameColor = Color.web("LightSkyBlue");
                 break;
             default:
-                nickname.setStyle("-fx-fill: #546e7a;");
+                nameColor = Color.web("#546e7a");
                 break;
         }
 
@@ -460,13 +433,21 @@ public class Message extends VBox {
     }
 
     public void select() {
-        this.setBackground(new Background(new BackgroundFill(selectedBackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        setSelectedBackground();
         selected = true;
     }
 
     public void unSelect() {
-        this.setBackground(new Background(new BackgroundFill(backColor, CornerRadii.EMPTY, Insets.EMPTY)));
+        setDefaultBackground();
         selected = false;
+    }
+
+    private void setDefaultBackground() {
+        backgroundRect.setFill(backColor);
+    }
+
+    private void setSelectedBackground() {
+        backgroundRect.setFill(selectedBackColor);
     }
 
     public void playPressedAnimation() {

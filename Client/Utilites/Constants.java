@@ -2,13 +2,13 @@ package ChillChat.Client.Utilites;
 
 public class Constants {
 
-
-    /*
-    public static final String IP = "192.168.10.142";
-    public static final int PORT = 16261;
-*/
-
     public static final String DESKTOP_VERSION = "JC0.1";
+
+//    public static final String IP = "192.168.10.142";
+//    public static final int PORT = 16261;
+
+
+
     public static final String IP = "138.68.74.16";
     public static final int PORT = 1488;
     
@@ -28,6 +28,7 @@ public class Constants {
     public final static Double TEXT_DISAPPEAR_TIME = 0.135;
     public final static Double TEXT_APPEAR_TIME = 0.25;
     public final static Double LINK_COLOR_CHANGE_TIME = 0.4;
+    public final static Double MESSAGE_CLICK_ANIMATION_TIME = 0.24;
 
     public static Boolean DEBUG = false;
     static Boolean PLAY_MUSIC_ON_START = false;
