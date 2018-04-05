@@ -9,8 +9,10 @@ import javafx.geometry.Pos;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -44,8 +46,8 @@ public class Message extends StackPane {
 
     private VBox textFlows;
     private ImageView imageView;
-    private Color backColor;
-    private Color selectedBackColor;
+    private Paint backColor;
+    private Paint selectedBackColor;
     private Color nameColor;
     private WebView video;
     private Rectangle backgroundRect;
@@ -68,8 +70,11 @@ public class Message extends StackPane {
         this.senderColor = senderColor;
         colorize(senderColor);
 
-        backColor = Color.color(nameColor.getRed(), nameColor.getGreen(), nameColor.getBlue(), 0.1);
-        selectedBackColor = Color.color(0.15, 0.25, 0.85, 0.4);
+        Color defaultColor = Color.color(nameColor.getRed(), nameColor.getGreen(), nameColor.getBlue(), 0.1);
+        Color selectedColor = Color.color(0.15, 0.25, 0.85, 0.4);
+
+        backColor = defaultColor;
+        selectedBackColor = selectedColor;
 
         this.senderName = senderName;
 
@@ -97,10 +102,13 @@ public class Message extends StackPane {
         this.senderColor = "9";
         colorize(senderColor);
 
-        backColor = Color.color(nameColor.getRed(), nameColor.getGreen(), nameColor.getBlue(), 0.1);
-        //selectedBackColor = Color.color(0.15, 0.25, 0.85, 0.4);
+        Color defaultColor = Color.color(nameColor.getRed(), nameColor.getGreen(), nameColor.getBlue(), 0.1);
+        Color selectedColor = Color.color(0.15, 0.25, 0.85, 0.4);
 
-        this.senderName = "SERVER";
+        backColor = defaultColor;
+        selectedBackColor = selectedColor;
+
+        this.senderName = "[SERVER]";
 
         if (DEBUG){
             this.setStyle("-fx-border-color: #FF765B");
@@ -114,10 +122,24 @@ public class Message extends StackPane {
     private void initRectangle() {
         this.backgroundRect = new Rectangle();
         backgroundRect.widthProperty().bind(content.widthProperty());
-        backgroundRect.heightProperty().bind(content.heightProperty());
-        backgroundRect.setArcHeight(30);
-        backgroundRect.setArcWidth(16);
+        content.heightProperty().addListener(e -> {
+            smoothResizeRectangle();
+        });
+        backgroundRect.setArcHeight(10);
+        backgroundRect.setArcWidth(10);
         this.getChildren().add(backgroundRect);
+    }
+
+    private void smoothResizeRectangle() {
+        Timeline resize = new Timeline();
+
+        resize.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(0.0), new KeyValue(backgroundRect.heightProperty(), backgroundRect.getHeight())));
+
+        resize.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(0.1), new KeyValue(backgroundRect.heightProperty(), content.getHeight())));
+
+        resize.play();
     }
 
     public static void setParentNode(Pane parentNode) {
@@ -126,10 +148,10 @@ public class Message extends StackPane {
 
     public static void loadFonts(){
         try {
-            commonFont = Font.loadFont(new FileInputStream(new File("resources/commonFont.ttf")), 24);
-            nameFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 22);
-            serverNameFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 24);
-            serverTextFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 20);
+            commonFont = Font.loadFont(new FileInputStream(new File("resources/commonFont.ttf")), 16);
+            nameFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 14);
+            serverNameFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 16);
+            serverTextFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 13);
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -137,16 +159,11 @@ public class Message extends StackPane {
 
     private void createTextFlows() {
         this.textFlows = new VBox();
-        textFlows.setSpacing(5);
-        textFlows.setPadding(new Insets(3));
+        textFlows.setSpacing(3);
+        textFlows.setPadding(new Insets(2));
     }
 
     private void setEffects() {
-
-        //glow = new Glow();
-        //glow.setLevel(1.0);
-
-        //content.setEffect(glow);
 
         clickedAnimation = new Timeline();
 
@@ -156,26 +173,6 @@ public class Message extends StackPane {
         clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(scaleYProperty(), 1.0)));
         clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(MESSAGE_CLICK_ANIMATION_TIME/4), new KeyValue(scaleYProperty(), 0.965)));
         clickedAnimation.getKeyFrames().add(new KeyFrame(Duration.seconds(MESSAGE_CLICK_ANIMATION_TIME), new KeyValue(scaleYProperty(), 1.0)));
-
-//        Timeline glowUp = new Timeline();
-//        glowUp.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(glow.levelProperty(), 0.2)));
-//        glowUp.getKeyFrames().add(new KeyFrame(Duration.seconds(0.15), new KeyValue(glow.levelProperty(), 1.0)));
-//
-//        Timeline glowDown = new Timeline();
-//        glowDown.getKeyFrames().add(new KeyFrame(Duration.seconds(0.0), new KeyValue(glow.levelProperty(), 0.7)));
-//        glowDown.getKeyFrames().add(new KeyFrame(Duration.seconds(0.15), new KeyValue(glow.levelProperty(), 0.0)));
-//
-//        setOnMouseEntered(e -> {
-//            glowDown.stop();
-//            glowUp.play();
-//        });
-//
-//        setOnMouseExited(e -> {
-//            glowUp.stop();
-//            glowDown.play();
-//        });
-//
-//        glowDown.play();
 
     }
 
@@ -194,7 +191,6 @@ public class Message extends StackPane {
         }
 
         TextFlow textFlow = new TextFlow();
-        //textFlow.setEffect(glow);
 
         if (DEBUG) {
             textFlow.setStyle("-fx-border-color: #81ffd9");
@@ -281,7 +277,6 @@ public class Message extends StackPane {
         boopFromFlat(newText);
         textFlows.getChildren().add(newText);
 
-
     }
 
     private void boopFromFlat(TextFlow newText) {
@@ -350,7 +345,7 @@ public class Message extends StackPane {
         //dropShadow.setInput(glow);
         nickname.setEffect(dropShadow);
 
-        content.setPadding(new Insets(4,4, 4, 4));
+        content.setPadding(new Insets(2,2, 2, 4));
 
         setDefaultBackground();
 
@@ -373,7 +368,6 @@ public class Message extends StackPane {
         this.getChildren().add(content);
 
     }
-
 
 
     private void colorize(String nickname) {
@@ -442,12 +436,17 @@ public class Message extends StackPane {
         selected = false;
     }
 
-    private void setDefaultBackground() {
+    private void smoothChangeBackColor(Paint backColor) {
+        //TODO SOMEHOW
         backgroundRect.setFill(backColor);
     }
 
+    private void setDefaultBackground() {
+        smoothChangeBackColor(backColor);
+    }
+
     private void setSelectedBackground() {
-        backgroundRect.setFill(selectedBackColor);
+        smoothChangeBackColor(selectedBackColor);
     }
 
     public void playPressedAnimation() {

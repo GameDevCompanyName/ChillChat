@@ -30,7 +30,7 @@ public class Constants {
     public final static Double LINK_COLOR_CHANGE_TIME = 0.4;
     public final static Double MESSAGE_CLICK_ANIMATION_TIME = 0.24;
 
-    public static Boolean DEBUG = false;
+    public static Boolean DEBUG = true;
     static Boolean PLAY_MUSIC_ON_START = false;
     static Boolean PLAY_MUSIC = false;
     static double MUSIC_VOLUME = 0.05;

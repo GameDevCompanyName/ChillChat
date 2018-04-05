@@ -178,7 +178,6 @@ class CustomConsole {
             animateSlideRightDissapear(message);
         });
 
-
         animateAppear(message);
 
         slowScrollToBottom();

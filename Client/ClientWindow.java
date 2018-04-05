@@ -49,6 +49,8 @@ public class ClientWindow {
                 Screen.getPrimary().getBounds().getHeight(),
                 Color.web("#121826"));
 
+        clientScene.getStylesheets().add("ChillChat/Client/test-style.css");
+
         clientStage.setScene(clientScene);
 
         musicPlayer = new MusicPlayer();

@@ -1,15 +1,14 @@
 package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleClient;
+import ChillChat.Client.Utilites.ChillTextPane;
 import ChillChat.Client.Utilites.ClientMessage;
 import ChillChat.Client.Utilites.Constants;
-import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
 import javafx.scene.input.KeyCode;
@@ -24,7 +23,7 @@ import java.io.FileNotFoundException;
 
 import static ChillChat.Client.Utilites.Constants.TEXT_DISAPPEAR_TIME;
 
-class Messenger {
+public class Messenger {
 
     private Scene clientScene;
     private ConsoleClient consoleClient;
@@ -34,7 +33,7 @@ class Messenger {
     private VBox messengerBox;
 
     private CustomConsole console;
-    private TextField inputField;
+    private ChillTextPane inputField;
     private GaussianBlur textBlur;
 
 
@@ -45,10 +44,6 @@ class Messenger {
         this.clientScene = clientScene;
 
         clientScene.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER)){
-                flushTextFromField();
-            }
-
             if (event.getCode().equals(KeyCode.ESCAPE)){
                 clientWindow.goToLoginScreen(false);
             }
@@ -82,16 +77,15 @@ class Messenger {
 
         Font inputFieldFont = null;
         try {
-            inputFieldFont = Font.loadFont(new FileInputStream(new File("resources/commonFont.ttf")), 28);
+            inputFieldFont = Font.loadFont(new FileInputStream(new File("resources/commonFont.ttf")), 16);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        ;
-        inputField = new TextField();
-        inputField.setFont(inputFieldFont);
-        inputField.setEffect(textBlur);
+
         textBlur.setInput(textGlow);
 
+        inputField = new ChillTextPane(inputFieldFont, this);
+        inputField.prefWidthProperty().bind(centralPane.widthProperty());
         inputField.prefWidthProperty().bind(centralPane.widthProperty());
 
         consolePane.prefHeightProperty().bind(messengerBox.heightProperty().subtract(inputField.heightProperty()));
@@ -109,61 +103,13 @@ class Messenger {
 
     public void changeInterfaceColor(String color) {
 
-        final String webColorString;
-
-        switch (color){
-            case "1":
-                webColorString = "#f44336";
-                break;
-            case "2":
-                webColorString = "#3f51b5";
-                break;
-            case "3":
-                webColorString = "#29b6f6";
-                break;
-            case "4":
-                webColorString = "#ff5722";
-                break;
-            case "5":
-                webColorString = "#4caf50";
-                break;
-            case "6":
-                webColorString = "#8bc34a";
-                break;
-            case "7":
-                webColorString = "#ffeb3b";
-                break;
-            case "8":
-                webColorString = "#ec407a";
-                break;
-            default:
-                webColorString = "#546e7a";
-                break;
-        }
-
-        FadeTransition fadeTransition = new FadeTransition(
-                Duration.seconds(1.0),
-                inputField
-                );
-        fadeTransition.setFromValue(1.0);
-        fadeTransition.setToValue(0.0);
-        fadeTransition.setOnFinished(e -> {
-            inputField.setStyle("-fx-background-color: transparent;-fx-text-inner-color: " + webColorString + ";");
-            FadeTransition fadeInTransition = new FadeTransition(
-                    Duration.seconds(1.0),
-                    inputField
-            );
-            fadeInTransition.setFromValue(0.0);
-            fadeInTransition.setToValue(1.0);
-            fadeInTransition.play();
-        });
-        fadeTransition.play();
+        inputField.changeColor(color);
 
 
 
     }
 
-    private void flushTextFromField() {
+    public void flushTextFromField() {
 
         String text = inputField.getText();
 
@@ -185,7 +131,7 @@ class Messenger {
         textDissapear.getKeyFrames().add(new KeyFrame(Duration.seconds(TEXT_DISAPPEAR_TIME), new KeyValue(textBlur.radiusProperty(), 20.0)));
         textDissapear.play();
         textDissapear.setOnFinished(e -> {
-            inputField.setText("");
+            inputField.clear();
             textBlur.setRadius(0);
         });
 
