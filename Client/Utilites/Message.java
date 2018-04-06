@@ -52,7 +52,6 @@ public class Message extends StackPane {
     private WebView video;
     private Rectangle backgroundRect;
 
-    //private Glow glow;
     private Timeline clickedAnimation;
 
     public Message(String senderName, String senderColor){
@@ -148,7 +147,8 @@ public class Message extends StackPane {
 
     public static void loadFonts(){
         try {
-            commonFont = Font.loadFont(new FileInputStream(new File("resources/commonFont.ttf")), 16);
+            commonFont = new Font("Courier New", 12);
+            //commonFont = Font.loadFont(new FileInputStream(new File("resources/commonFont.ttf")), 16);
             nameFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 14);
             serverNameFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 16);
             serverTextFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 13);

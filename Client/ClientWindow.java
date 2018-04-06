@@ -151,7 +151,7 @@ public class ClientWindow {
 
         FadeTransition backFadeIn = new FadeTransition(Duration.seconds(LOGIN_FADE_TIME * 2), background);
         backFadeIn.setFromValue(0);
-        backFadeIn.setToValue(0.6);
+        backFadeIn.setToValue(0.3);
 
         centralPane.prefWidthProperty().bind(clientScene.widthProperty());
         centralPane.prefHeightProperty().bind(clientScene.heightProperty());
@@ -185,7 +185,7 @@ public class ClientWindow {
 
         StackPane centralPane = new StackPane();
 
-        centralPane.prefWidthProperty().bind(clientScene.widthProperty());
+        centralPane.prefWidthProperty().bind(clientScene.widthProperty().subtract(10));
         centralPane.prefHeightProperty().bind(clientScene.heightProperty());
         centralPane.maxWidthProperty().bind(clientScene.widthProperty());
         centralPane.maxHeightProperty().bind(clientScene.heightProperty());

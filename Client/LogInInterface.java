@@ -21,6 +21,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 public class LogInInterface {
 
     private LogInProcedure logIn;
@@ -55,38 +58,47 @@ public class LogInInterface {
         this.clientWindow = clientWindow;
         this.logIn = logIn;
 
-        Font title = new Font("Century Gothic Bold", 50);
-        Font common = new Font("Century Gothic", 16);
-        Font input = new Font("Century Gothic", 20);
-        Font error = new Font("Century Gothic", 22);
+
+
+        Font title = null;
+        Font common = null;
+        Font input = null;
+        Font error = null;
+
+        try {
+            common = Font.loadFont(new FileInputStream("resources/commonFont.ttf"), 24);
+            title = Font.loadFont(new FileInputStream("resources/nameFont.ttf"), 54);
+            input = new Font("Courier New", 24);
+            error = Font.loadFont(new FileInputStream("resources/commonFont.ttf"), 28);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         this.box = new VBox();
         loginField = new TextField();
         passwordField = new PasswordField();
         acceptButton = new Button("CHILLAX");
 
-        Background background = new Background(new BackgroundFill(Color.rgb(200, 200, 200, 0.3), CornerRadii.EMPTY, Insets.EMPTY));
+        Background background = new Background(new BackgroundFill(Color.rgb(35, 35, 45, 0.7), CornerRadii.EMPTY, Insets.EMPTY));
         box.setBackground(background);
 
         titleText = new Label( "ChillChat");
-        //setNeonEffect(titleText);
         inputLogin = new Label("L O G I N");
         inputPassword = new Label("P A S S");
         loginState = new Label("");
 
-        loginField.setStyle("-fx-background-color: transparent; -fx-text-fill: #d0cffa");
+        loginField.setStyle("-fx-background-color: transparent; -fx-text-fill: #d1cefa");
         loginField.setFont(input);
         loginField.setScaleX(1.5);
         loginField.setScaleY(1.5);
         loginField.maxWidthProperty().bind(titleText.widthProperty());
 
-        passwordField.setStyle("-fx-background-color: transparent; -fx-text-fill: #d0cffa");
+        passwordField.setStyle("-fx-background-color: transparent; -fx-text-fill: #d1cefa");
+        passwordField.setFont(input);
         passwordField.setScaleX(1.5);
         passwordField.setScaleY(1.5);
         passwordField.maxWidthProperty().bind(titleText.widthProperty());
 
-        loginField.setFont(common);
-        passwordField.setFont(common);
         titleText.setFont(title);
 
         inputLogin.setFont(common);
@@ -98,9 +110,9 @@ public class LogInInterface {
         passwordField.setEffect(glow);
 
         loginState.setTextFill(Color.RED);
-        inputLogin.setStyle("-fx-text-fill: #d0cffa");
-        inputPassword.setStyle("-fx-text-fill: #d0cffa");
-        titleText.setStyle("-fx-text-fill: #b6c4fa");
+        inputLogin.setStyle("-fx-text-fill: #80a8f0");
+        inputPassword.setStyle("-fx-text-fill: #80a8f0");
+        titleText.setStyle("-fx-text-fill: rgba(191,190,255,0.95)");
 
         acceptButton.setOnMouseClicked(e -> tryToLogIn());
 
@@ -112,8 +124,8 @@ public class LogInInterface {
         box.setAlignment(Pos.CENTER);
         //box.prefWidthProperty().bind(interfacePane.widthProperty());
         box.setSpacing(10);
-
-        box.maxWidthProperty().bind(titleText.widthProperty().multiply(1.5));
+        box.setPadding(new Insets(10));
+        box.maxWidthProperty().bind(titleText.widthProperty().multiply(1.6));
         box.maxHeightProperty().bind(loginState.layoutYProperty().subtract(titleText.layoutYProperty().subtract(15)));
 
         //interfacePane.prefWidthProperty().bind(parentPane.widthProperty().divide(2.5));

@@ -47,6 +47,7 @@ class CustomConsole {
 
         textBox.setPadding(new Insets(13));
         textBox.setSpacing(5);
+        textBox.prefWidthProperty().bind(parentPane.widthProperty());
 
         mainBox.prefHeightProperty().bind(parentPane.heightProperty());
         mainBox.prefWidthProperty().bind(parentPane.widthProperty());

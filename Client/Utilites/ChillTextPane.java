@@ -21,7 +21,7 @@ public class ChillTextPane extends StackPane {
 
     public ChillTextPane(Font font, Messenger messenger){
 
-        this.setAlignment(Pos.TOP_LEFT);
+        this.setAlignment(Pos.BOTTOM_LEFT);
 
         textArea = new MyTextArea(messenger);
         if (DEBUG){
@@ -37,12 +37,11 @@ public class ChillTextPane extends StackPane {
         textArea.heightProperty().addListener(e -> {
             smoothResizeRectangle();
         });
-        backRect.setArcHeight(9);
-        backRect.setArcWidth(9);
-        backRect.setFill(Color.rgb(20, 20, 30, 0.75));
+        backRect.setArcHeight(30);
+        backRect.setArcWidth(30);
+        backRect.setFill(Color.rgb(20, 20, 30, 0.95));
 
         this.getChildren().addAll(backRect, textArea);
-        //this.getChildren().addAll(backRect);
 
     }
 

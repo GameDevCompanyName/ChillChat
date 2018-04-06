@@ -86,7 +86,7 @@ public class MyTextArea extends TextArea {
         helper.setFont(this.getFont());
         // Note that the wrapping width needs to be set to zero before
         // getting the text's real preferred width.
-        helper.setWrappingWidth(0);
+        //helper.setWrappingWidth(0);
         return helper.getLayoutBounds();
     }
 

@@ -115,8 +115,8 @@ public class Messenger {
 
         if (text.isEmpty())
             return;
-        if (text.length() > 255)
-            sendMessage(text.substring(0, 255));
+        if (text.length() > 1000)
+            sendMessage(text.substring(0, 1000));
         else
             sendMessage(text);
 
