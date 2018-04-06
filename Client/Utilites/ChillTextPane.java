@@ -31,25 +31,19 @@ public class ChillTextPane extends StackPane {
         textArea.setFont(font);
 
         backRect = new Rectangle();
+        backRect.setWidth(this.getWidth());
+        backRect.widthProperty().bind(this.widthProperty());
 
-        //backRect.setWidth(textArea.getWidth());
-        //backRect.setHeight(textArea.getHeight());
-//        textArea.heightProperty().addListener(e -> {
-//            //smoothResizeRectangle();
-//            if (backRect.getHeight() >= 100)
-//                backRect.setHeight(textArea.getHeight());
-//            if (backRect.getHeight() > 100)
-//                backRect.setHeight(100);
-//        });
-        this.maxHeightProperty().bind(textArea.heightProperty());
-        this.heightProperty().addListener(e -> {
+        textArea.heightProperty().addListener(e -> {
             smoothResizeRectangle();
         });
-        backRect.setArcHeight(20);
-        backRect.setArcWidth(20);
-        backRect.setFill(Color.rgb(5, 5, 60, 0.2));
+        backRect.setArcHeight(9);
+        backRect.setArcWidth(9);
+        backRect.setFill(Color.rgb(20, 20, 30, 0.75));
 
         this.getChildren().addAll(backRect, textArea);
+        //this.getChildren().addAll(backRect);
+
     }
 
     private void smoothResizeRectangle() {
@@ -59,7 +53,7 @@ public class ChillTextPane extends StackPane {
                 new KeyFrame(Duration.seconds(0.0), new KeyValue(backRect.heightProperty(), backRect.getHeight())));
 
         resize.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(0.2), new KeyValue(backRect.heightProperty(), this.getHeight()-2)));
+                new KeyFrame(Duration.seconds(0.2), new KeyValue(backRect.heightProperty(), textArea.getHeight()-2)));
 
         resize.play();
     }

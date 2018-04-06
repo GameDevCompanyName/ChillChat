@@ -46,6 +46,10 @@ public class MyTextArea extends TextArea {
         textProperty().addListener(e -> {
             Bounds bounds = getTextBounds();
             setPrefHeight(bounds.getHeight());
+            if (bounds.getHeight() > 100)
+                setMaxHeight(100);
+            else
+                setMaxHeight(bounds.getHeight());
         });
 
     }
