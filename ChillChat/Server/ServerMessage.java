@@ -9,8 +9,11 @@ import org.json.simple.JSONValue;
 
 public class ServerMessage {
 
+    public static TimeoutChecker timeoutChecker;
+
     //Читаем входное сообщение от клиента
     public static String read(String input, Connection connection){
+        timeoutChecker.refreshCounter(connection.getUserName());
         JSONObject incomingMessage = (JSONObject) JSONValue.parse(input);
         String type = incomingMessage.get("type").toString();
         switch (type){
@@ -34,6 +37,10 @@ public class ServerMessage {
             default:
                 return "false";
         }
+    }
+
+    public static void setTimeoutChecker(TimeoutChecker timeoutChecker){
+        ServerMessage.timeoutChecker = timeoutChecker;
     }
 
     //Все статичные методы описаны в документации
@@ -125,4 +132,19 @@ public class ServerMessage {
         object.put("first", login);
         return object.toJSONString();
     }
+
+    public static String serverPingSend(){
+        JSONObject object = new JSONObject();
+        object.put("type", "ping");
+        return object.toJSONString();
+    }
+    public static String userRoleSend(String login, String role){
+        JSONObject object = new JSONObject();
+        object.put("type", "userColor");
+        object.put("first", login);
+        object.put("second", role);
+        return object.toJSONString();
+    }
+
+
 }

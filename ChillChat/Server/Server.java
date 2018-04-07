@@ -16,17 +16,22 @@ public class Server {
 
     Broadcaster broadcaster;
     DBConnector dbConnector;
+    TimeoutChecker timeoutChecker;
 
     public Server(){
         broadcaster = new Broadcaster();
+        timeoutChecker = new TimeoutChecker(broadcaster);
         try {
-            dbConnector = new DBConnector();
+            dbConnector = new DBConnector(broadcaster);
             //Инициализируем командную строку сервера в отдельном потоке
             CommandLine cmd = new CommandLine(broadcaster);
             cmd.start();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        Broadcaster.setTimeoutChecker(timeoutChecker);
+        ServerMessage.setTimeoutChecker(timeoutChecker);
         ServerMethods.setBroadcaster(broadcaster);
         ServerMethods.setDbConnector(dbConnector);
         Commands.setBroadcaster(broadcaster);

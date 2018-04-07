@@ -52,13 +52,7 @@ public class ServerMethods {
         if(m.matches()) {
             message = message.substring(1);
             String[] command = message.split(" ");
-            if(command[0].equals("clients")){
-                Commands.invoke(command);
-            }
-            else{
-                Connection conn = broadcaster.getConnectionByLogin(login);
-                conn.sendMessage(ServerMessage.serverMessageSend("Нет доступа"));
-            }
+            Commands.invoke(command, login);
         }
         //Иначе отправляем как сообщение в чат
         else {
@@ -70,6 +64,7 @@ public class ServerMethods {
 
     public static void disconnectReceived(Connection connection, String reason){
         System.out.println(Utilities.getStartText("ServerMethods")+connection.getUserName()+" отключился: "+reason);
+        broadcaster.disconnectClient(connection.getUserName());
         connection.disconnect(reason);
     }
 }

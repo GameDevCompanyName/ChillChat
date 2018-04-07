@@ -11,10 +11,12 @@ import java.util.Random;
 public class DBConnector {
 
     private Connection connection;
+    private Broadcaster broadcaster;
     private String startText = Utilities.getStartText("DBConnector");
 
-    public DBConnector() throws SQLException {
+    public DBConnector(Broadcaster broadcaster) throws SQLException {
         setConnection();
+        this.broadcaster = broadcaster;
     }
 
     //Установка соединения с бд
@@ -58,7 +60,7 @@ public class DBConnector {
                 + "	login VARCHAR(20) NOT NULL UNIQUE,\n"
                 + "	password VARCHAR(20) NOT NULL,\n"
                 + "	color VARCHAR(6) NOT NULL,\n"
-                + " role INTEGER(3) NOT NULL DEFAULT '1',\n"
+                + " role VARCHAR(20) NOT NULL,\n"
                 + " regdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP "
                 + ");";
 
@@ -76,14 +78,16 @@ public class DBConnector {
         String sql = "INSERT INTO Users ("
                 + "login,"
                 + "password,"
-                + "color) VALUES(?,?,?)";
+                + "color,"
+                + "role) VALUES(?,?,?,?)";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             int colorCode = 1 + (new Random().nextInt(7));
             String color = Integer.toString(colorCode);
             pstmt.setString(1, login);
             pstmt.setString(2, password);
-            pstmt.setString(3, ( color));
+            pstmt.setString(3, color);
+            pstmt.setString(4, "user");
             pstmt.executeUpdate();
             System.out.println(startText+"Пользователь " + login + " добавлен в таблицу");
 
@@ -107,13 +111,14 @@ public class DBConnector {
     }
 
     //Сменить роль юзера
-    public void updateUserRole(String login, int role) {
+    public void updateUserRole(String login, String role) {
 
         String sql = "UPDATE Users SET role = ? WHERE login=?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, role);
+            pstmt.setString(1, role);
             pstmt.setString(2, login);
             pstmt.executeUpdate();
+            broadcaster.getConnectionByLogin(login).updateRole(role);
             System.out.println(startText+"Обновление роли пользователя " + login);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -128,6 +133,7 @@ public class DBConnector {
             pstmt.setString(1, color);
             pstmt.setString(2, login);
             pstmt.executeUpdate();
+            broadcaster.getConnectionByLogin(login).updateColor(color);
             System.out.println(startText+"Обновление цвета пользователя " + login);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -176,7 +182,7 @@ public class DBConnector {
             if (!rs.isBeforeFirst()){
                 return "false";
             }
-            return Integer.toString(rs.getInt("role"));
+            return rs.getString("role");
         } catch (SQLException e) {
             e.printStackTrace();
         }

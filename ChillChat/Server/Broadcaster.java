@@ -1,29 +1,38 @@
 package ChillChat.Server;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /*
 Броадкастер работает с соединениями. Содержит в себе их список и методы для работы с ними.
  */
 public class Broadcaster {
 
+    public static TimeoutChecker timeoutChecker;
     //Список соединений
-    private List<Connection> connections = new ArrayList();
+
+    private Map<String, Connection> connections = new HashMap<>();
     private String startText = Utilities.getStartText("Broadcaster");
     //Добавить нового клиента в список соединений
     public void connectClient(Connection client){
-        connections.add(client);
+        connections.put(client.getUserName(), client);
+        timeoutChecker.addClient(client.getUserName());
         broadcastMessage(ServerMessage.serverUserLoginSend(client.getUserName()));
         printClients();
     }
 
+    public static void setTimeoutChecker(TimeoutChecker timeoutChecker){
+        Broadcaster.timeoutChecker=timeoutChecker;
+    }
+
+
     //Удалить клиента из списка
-    public void disconnectClient(Connection client){
-        connections.remove(client);
-        broadcastMessage(ServerMessage.serverUserDisconnectSend(client.getUserName()));
+    public void disconnectClient(String name){
+        if(!connections.containsKey(name))
+            return;
+        connections.remove(name);
+        broadcastMessage(ServerMessage.serverUserDisconnectSend(name));
         printClients();
+
     }
 
     private void printClients() {
@@ -33,8 +42,8 @@ public class Broadcaster {
     //Передача сообщения всем клиентам
     public void broadcastMessage(String message){
         try {
-            for (Connection connection: connections) {
-                connection.sendMessage(message);
+            for (Connection client: connections.values()){
+                client.sendMessage(message);
             }
         } catch (Exception e){
             System.out.println(startText+"Ошибка при отправке сообщения");
@@ -42,34 +51,29 @@ public class Broadcaster {
         }
     }
 
-    public List<Connection> getConnections(){
-        return connections;
+    public Collection<Connection> getConnections(){
+        return connections.values();
     }
 
     //Получить соединение по логину
     public Connection getConnectionByLogin(String login){
-        for (Connection conn: connections) {
-            if(conn.getUserName()==null)
-                continue;
-            if(conn.getUserName().equals(login))
-            {
-                return conn;
-            }
-        }
-        return null;
+        return connections.get(login);
     }
 
     //Отключить всех
     public void disconnectAll(){
-
-        Iterator<Connection> i = connections.iterator();
+        Iterator<Connection> i = connections.values().iterator();
         while (i.hasNext()) {
             Connection value = i.next();
             value.disconnect("Сервер закрыл соединение");
             i.remove();
         }
         connections.clear();
-        System.out.println(startText+"Соединения закрыты");
+        System.out.println(startText+"Соединения закрыты(DiscAll)");
         printClients();
+    }
+
+    public void sendConnectionMessage(String name, String message){
+        connections.get(name).sendMessage(message);
     }
 }

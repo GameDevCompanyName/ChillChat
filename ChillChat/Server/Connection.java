@@ -94,18 +94,25 @@ public class Connection extends Thread {
 
 
         } catch (IOException e) {
-            broadcaster.disconnectClient(this);
+            broadcaster.disconnectClient(userName);
             this.interrupt();
         }
 
     }
 
     //Обновление цвета в соединении и отправка пользователю его нового цвета
-    public void updateColor(String color)
-    {
+    public void updateColor(String color){
         userColor = color;
         System.out.println(startText+"Цвет пользователя "+ userName +" изменен на "+userColor);
+        out.println(ServerMessage.serverMessageSend("Ваш цвет обновлен"));
         out.println(ServerMessage.userColorSend(userName,color));
+    }
+
+    public void updateRole(String role){
+        userRole = role;
+        System.out.println(startText+"Роль пользователя "+ userName +" изменена на "+userRole);
+        out.println(ServerMessage.serverMessageSend("Ваша роль обновлена на "+role));
+
     }
 
     //Отправка сообщения
@@ -127,9 +134,9 @@ public class Connection extends Thread {
 
     //Отключение пользователя, закрытие соединения и потока
     public void disconnect(String reason) {
-        System.out.println(startText + userName +" отключен по причине: "+reason);
         out.println(ServerMessage.userDisconnectSend(reason));
         try {
+
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

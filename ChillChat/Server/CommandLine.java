@@ -30,7 +30,7 @@ public class CommandLine extends Thread{
             if(m.matches()) {
                 text = text.substring(1);
                 String[] command = text.split(" ");
-                Commands.invoke(command);
+                Commands.invoke(command, "ServerAdminRootSuperKeyForSecurity");
 
             }
             //Иначе отправляем как сообщение в чат
