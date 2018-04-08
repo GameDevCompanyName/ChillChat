@@ -32,10 +32,8 @@ public class ChillTextPane extends StackPane {
             this.setStyle("-fx-border-color: GREEN");
         }
         textArea.setFont(font);
-        //textArea.prefWidthProperty().bind(clientScene.widthProperty().subtract(3));
 
         backRect = new Rectangle();
-        //backRect.setWidth(this.getWidth());
         backRect.widthProperty().bind(clientScene.widthProperty().subtract(3));
 
         textArea.heightProperty().addListener(e -> {

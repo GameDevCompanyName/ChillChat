@@ -23,6 +23,8 @@ import javafx.util.Duration;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LogInInterface {
 
@@ -204,6 +206,14 @@ public class LogInInterface {
 
         clientWindow.startConsoleClient();
 
+        Pattern p = Pattern.compile("[^А-Яа-яA-Za-z0-9_-]");
+        Matcher m = p.matcher(loginField.getText());
+        if (m.find()){
+            disabledSymbols();
+            return;
+        }
+
+
         if (passwordField.getText().isEmpty() || loginField.getText().isEmpty()){
             wrongInput();
             return;
@@ -219,6 +229,10 @@ public class LogInInterface {
 
         clearErrorField();
 
+    }
+
+    private void disabledSymbols() {
+        loginState.setText("Запрещённые символы");
     }
 
     private void clearErrorField() {

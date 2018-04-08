@@ -1,5 +1,6 @@
 package ChillChat.Client;
 
+import ChillChat.Client.Utilites.ChillTextPane;
 import ChillChat.Client.Utilites.Message;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -36,7 +37,7 @@ class CustomConsole {
     private Font commonFont;
     private Font serverFont;
 
-    CustomConsole(Client client, Scene scene){
+    CustomConsole(Client client, Scene scene, ChillTextPane inputField){
 
         this.selectedMessages = new ArrayList<>();
         this.client = client;
@@ -50,9 +51,9 @@ class CustomConsole {
         textBox.setSpacing(5);
         textBox.prefWidthProperty().bind(scene.widthProperty());
 
-        mainBox.prefHeightProperty().bind(scene.heightProperty());
+        mainBox.prefHeightProperty().bind(scene.heightProperty().subtract(inputField.heightProperty()));
         mainBox.prefWidthProperty().bind(scene.widthProperty());
-        mainBox.maxHeightProperty().bind(scene.heightProperty());
+        mainBox.maxHeightProperty().bind(scene.heightProperty().subtract(inputField.heightProperty()));
         mainBox.maxWidthProperty().bind(scene.widthProperty());
 
         if (DEBUG)
@@ -63,9 +64,9 @@ class CustomConsole {
         if (DEBUG)
             scrollPane.setStyle("-fx-border-color: green");
         scrollPane.prefWidthProperty().bind(scene.widthProperty());
-        scrollPane.prefHeightProperty().bind(scene.heightProperty());
+        scrollPane.prefHeightProperty().bind(scene.heightProperty().subtract(inputField.heightProperty()));
         scrollPane.maxWidthProperty().bind(scene.widthProperty());
-        scrollPane.maxHeightProperty().bind(scene.heightProperty());
+        scrollPane.maxHeightProperty().bind(scene.heightProperty().subtract(inputField.heightProperty()));
 
         scrollPane.setBackground(Background.EMPTY);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -187,6 +188,9 @@ class CustomConsole {
     }
 
     private void animateSlideRightDissapear(Message message) {
+
+        if (message == lastMessage)
+            lastMessage = null;
 
         Timeline slideRight = new Timeline();
 

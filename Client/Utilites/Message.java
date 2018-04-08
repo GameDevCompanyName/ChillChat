@@ -12,7 +12,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -22,7 +23,6 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static ChillChat.Client.Utilites.Constants.*;
@@ -188,14 +188,6 @@ public class Message extends StackPane {
         if (type == MessageType.SERVER_MESSAGE)
             font = serverTextFont;
 
-        Font boldTextFont;
-
-        try {
-            boldTextFont = Font.loadFont(new FileInputStream(new File("resources/nameFont.ttf")), 16);
-        } catch (FileNotFoundException e) {
-            boldTextFont = commonFont;
-        }
-
         TextFlow textFlow = new TextFlow();
 
         if (DEBUG) {
@@ -238,7 +230,7 @@ public class Message extends StackPane {
 
 
             } else {
-                if (word.charAt(0) == '@'){
+                if (word.length() > 2 && (word.charAt(0) == '/' || word.substring(0, 2).equals("\\/"))){
                     if (buffer.length() != 0){
                         Text bufferedText = new Text();
                         colorizeText(bufferedText);
@@ -248,10 +240,10 @@ public class Message extends StackPane {
                         buffer = new StringBuilder();
                     }
 
-                    Text boldText = new Text(word.substring(1));
-                    colorizeText(boldText);
-                    boldText.setFont(boldTextFont);
-                    textFlow.getChildren().add(boldText);
+                    Text command = new Text(word);
+                    command.setFill(Color.web("#ff4081"));
+                    command.setFont(font);
+                    textFlow.getChildren().add(command);
 
                 } else
                     buffer.append(word);
