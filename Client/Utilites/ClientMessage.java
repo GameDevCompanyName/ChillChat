@@ -7,6 +7,8 @@ public class ClientMessage {
 
     public static void read(String input){
 
+        if (input == null)
+            return;
         JSONObject incomingMessage = (JSONObject) JSONValue.parse(input);
         System.out.println(incomingMessage);
         String methodName = (String) incomingMessage.get("type");
@@ -60,6 +62,9 @@ public class ClientMessage {
                         incomingMessage.get("first").toString()
                 );
                 break;
+            case "ping":
+                ClientMethods.serverPingRequest();
+                break;
         }
 
     }
@@ -94,4 +99,9 @@ public class ClientMessage {
         return object.toJSONString();
     }
 
+    public static String userPong() {
+        JSONObject object = new JSONObject();
+        object.put("type", "pong");
+        return object.toJSONString();
+    }
 }

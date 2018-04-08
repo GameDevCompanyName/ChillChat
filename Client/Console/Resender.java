@@ -16,6 +16,7 @@ class Resender extends Thread {
     private ClientWindow clientWindow;
 
     Resender(BufferedReader in, LogInProcedure logIn, ClientWindow clientWindow) {
+        setName("Resender");
         this.in = in;
         this.logIn = logIn;
         this.clientWindow = clientWindow;
@@ -40,12 +41,8 @@ class Resender extends Thread {
 
             try {
                 String message = in.readLine();
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        ClientMessage.read(message);
-                    }
-                });
+                if (!stoped)
+                    Platform.runLater(() -> ClientMessage.read(message));
             } catch (IOException e) {
                 System.out.println("Выключение входного потока");
             }

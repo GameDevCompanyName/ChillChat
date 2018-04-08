@@ -196,6 +196,7 @@ public class LogInInterface {
     }
 
     public void loggedIn() {
+        loginState.setText("");
         clientWindow.loggedIn();
     }
 

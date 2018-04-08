@@ -6,6 +6,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -19,9 +21,10 @@ public class ChillTextPane extends StackPane {
     MyTextArea textArea;
     Rectangle backRect;
 
-    public ChillTextPane(Font font, Messenger messenger){
+    public ChillTextPane(Font font, Messenger messenger, Pane parentPane, Scene clientScene){
 
         this.setAlignment(Pos.BOTTOM_LEFT);
+        this.prefWidthProperty().bind(clientScene.widthProperty().subtract(3));
 
         textArea = new MyTextArea(messenger);
         if (DEBUG){
@@ -29,17 +32,18 @@ public class ChillTextPane extends StackPane {
             this.setStyle("-fx-border-color: GREEN");
         }
         textArea.setFont(font);
+        //textArea.prefWidthProperty().bind(clientScene.widthProperty().subtract(3));
 
         backRect = new Rectangle();
-        backRect.setWidth(this.getWidth());
-        backRect.widthProperty().bind(this.widthProperty());
+        //backRect.setWidth(this.getWidth());
+        backRect.widthProperty().bind(clientScene.widthProperty().subtract(3));
 
         textArea.heightProperty().addListener(e -> {
             smoothResizeRectangle();
         });
         backRect.setArcHeight(30);
         backRect.setArcWidth(30);
-        backRect.setFill(Color.rgb(20, 20, 30, 0.95));
+        backRect.setFill(Color.rgb(10, 10, 25, 0.8));
 
         this.getChildren().addAll(backRect, textArea);
 

@@ -101,7 +101,7 @@ public class Message extends StackPane {
         this.senderColor = "9";
         colorize(senderColor);
 
-        Color defaultColor = Color.color(nameColor.getRed(), nameColor.getGreen(), nameColor.getBlue(), 0.1);
+        Color defaultColor = Color.color(nameColor.getRed(), nameColor.getGreen(), nameColor.getBlue(), 0.15);
         Color selectedColor = Color.color(0.15, 0.25, 0.85, 0.4);
 
         backColor = defaultColor;
@@ -120,10 +120,8 @@ public class Message extends StackPane {
 
     private void initRectangle() {
         this.backgroundRect = new Rectangle();
-        backgroundRect.widthProperty().bind(content.widthProperty());
-        content.heightProperty().addListener(e -> {
-            smoothResizeRectangle();
-        });
+        content.widthProperty().addListener(e -> smoothResizeRectangle());
+        content.heightProperty().addListener(e -> smoothResizeRectangle());
         backgroundRect.setArcHeight(10);
         backgroundRect.setArcWidth(10);
         this.getChildren().add(backgroundRect);
@@ -132,13 +130,21 @@ public class Message extends StackPane {
     private void smoothResizeRectangle() {
         Timeline resize = new Timeline();
 
-        resize.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(0.0), new KeyValue(backgroundRect.heightProperty(), backgroundRect.getHeight())));
+        resize.getKeyFrames().addAll(
+                new KeyFrame(Duration.seconds(0.0), new KeyValue(backgroundRect.heightProperty(), backgroundRect.getHeight())),
+                new KeyFrame(Duration.seconds(0.0), new KeyValue(backgroundRect.widthProperty(), backgroundRect.getWidth())));
 
-        resize.getKeyFrames().add(
-                new KeyFrame(Duration.seconds(0.1), new KeyValue(backgroundRect.heightProperty(), content.getHeight())));
+
+        resize.getKeyFrames().addAll(
+                new KeyFrame(Duration.seconds(0.1), new KeyValue(backgroundRect.heightProperty(), content.getHeight() - 1)),
+                new KeyFrame(Duration.seconds(0.1), new KeyValue(backgroundRect.widthProperty(), content.getWidth() - 8)));
 
         resize.play();
+        resize.setOnFinished(e -> {
+            if (backgroundRect.getWidth() > content.getWidth()-5)
+                smoothResizeRectangle();
+        });
+
     }
 
     public static void setParentNode(Pane parentNode) {
@@ -345,7 +351,7 @@ public class Message extends StackPane {
         //dropShadow.setInput(glow);
         nickname.setEffect(dropShadow);
 
-        content.setPadding(new Insets(2,2, 2, 4));
+        content.setPadding(new Insets(2,11, 2, 4));
 
         setDefaultBackground();
 

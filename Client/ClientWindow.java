@@ -1,6 +1,7 @@
 package ChillChat.Client;
 
 import ChillChat.Client.Console.ConsoleClient;
+import ChillChat.Client.Utilites.ClientMessage;
 import ChillChat.Client.Utilites.ClientMethods;
 import ChillChat.Client.Utilites.MusicPlayer;
 import ChillChat.Client.Utilites.Utils;
@@ -185,12 +186,15 @@ public class ClientWindow {
 
         StackPane centralPane = new StackPane();
 
-        centralPane.prefWidthProperty().bind(clientScene.widthProperty().subtract(10));
+        if (DEBUG)
+            centralPane.setStyle("-fx-border-color: white");
+
+        centralPane.prefWidthProperty().bind(clientScene.widthProperty());
         centralPane.prefHeightProperty().bind(clientScene.heightProperty());
         centralPane.maxWidthProperty().bind(clientScene.widthProperty());
         centralPane.maxHeightProperty().bind(clientScene.heightProperty());
 
-        this.messenger = new Messenger(consoleClient, centralPane, clientScene, client, this, client);
+        this.messenger = new Messenger(consoleClient, centralPane, clientScene, client, this);
 
     }
 
@@ -296,7 +300,8 @@ public class ClientWindow {
 
     public void disconnectedByReason(String reason) {
         if (messenger != null)
-            messenger.displayDisconnectedByReason(reason);
+            messenger.disconnectedByReason(reason);
+        goToLoginScreen(false);
     }
 
     public void userConnectedRecieved(String login) {
@@ -307,6 +312,10 @@ public class ClientWindow {
     public void userDisconnectedRecieved(String login) {
         if (messenger != null)
             messenger.displayUserDisconnected(login);
+    }
+
+    public void sendPong() {
+        consoleClient.sendMessage(ClientMessage.userPong());
     }
 
 }

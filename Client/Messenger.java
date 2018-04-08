@@ -37,7 +37,7 @@ public class Messenger {
     private GaussianBlur textBlur;
 
 
-    Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Client client, ClientWindow clientWindow, Client client1) {
+    Messenger(ConsoleClient consoleClient, StackPane centralPane, Scene clientScene, Client client, ClientWindow clientWindow) {
 
         this.centralPane = centralPane;
         this.clientWindow = clientWindow;
@@ -59,15 +59,10 @@ public class Messenger {
         if (Constants.DEBUG)
             messengerBox.setStyle("-fx-border-color: yellow");
 
-        messengerBox.prefHeightProperty().bind(centralPane.heightProperty());
-        messengerBox.prefWidthProperty().bind(centralPane.widthProperty());
-        messengerBox.maxHeightProperty().bind(centralPane.heightProperty());
-        messengerBox.maxWidthProperty().bind(centralPane.widthProperty());
-
-        StackPane consolePane = new StackPane();
-
-        if (Constants.DEBUG)
-            consolePane.setStyle("-fx-border-color: orange");
+        messengerBox.prefHeightProperty().bind(clientScene.heightProperty());
+        messengerBox.prefWidthProperty().bind(clientScene.widthProperty());
+        messengerBox.maxHeightProperty().bind(clientScene.heightProperty());
+        messengerBox.maxWidthProperty().bind(clientScene.widthProperty());
 
 
         Glow textGlow = new Glow();
@@ -84,20 +79,15 @@ public class Messenger {
 
         textBlur.setInput(textGlow);
 
-        inputField = new ChillTextPane(inputFieldFont, this);
+        inputField = new ChillTextPane(inputFieldFont, this, messengerBox, clientScene);
         inputField.prefWidthProperty().bind(centralPane.widthProperty());
         inputField.prefWidthProperty().bind(centralPane.widthProperty());
 
-        consolePane.prefHeightProperty().bind(messengerBox.heightProperty().subtract(inputField.heightProperty()));
-        consolePane.maxHeightProperty().bind(messengerBox.heightProperty().subtract(inputField.heightProperty()));
-        consolePane.prefWidthProperty().bind(messengerBox.widthProperty());
-        consolePane.maxWidthProperty().bind(messengerBox.widthProperty());
 
-        console = new CustomConsole(consolePane, client);
 
-        consolePane.getChildren().add(console.getBox());
+        console = new CustomConsole(client, clientScene);
 
-        messengerBox.getChildren().addAll(consolePane, inputField);
+        messengerBox.getChildren().addAll(console.getBox(), inputField);
 
     }
 
@@ -158,10 +148,10 @@ public class Messenger {
     }
 
     public void displayUserKicked(String login, String reason) {
-        console.serverMessageAppend(login + " отключился.\nПричина: " + reason);
+        console.serverMessageAppend(login + " кикнут по причине: " + reason);
     }
 
-    public void displayDisconnectedByReason(String reason) {
+    public void disconnectedByReason(String reason) {
         console.serverMessageAppend("Вы отключены от сервера.\nПричина: " + reason);
     }
 

@@ -66,4 +66,7 @@ public class ClientMethods {
         clientWindow.userDisconnectedRecieved(login);
     }
 
+    public static void serverPingRequest() {
+        clientWindow.sendPong();
+    }
 }

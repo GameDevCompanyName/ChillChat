@@ -23,6 +23,7 @@ public class ConsoleClient extends Thread {
     private boolean initiated = false;
 
     public ConsoleClient(ClientWindow clientWindow) {
+        setName("ConsoleClient");
         this.clientWindow = clientWindow;
         logIn = new LogInProcedure(this);
     }

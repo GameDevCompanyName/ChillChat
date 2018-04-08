@@ -9,6 +9,8 @@ public class Client extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        Thread.currentThread().setName("MAIN");
+
         Message.loadFonts();
 
         primaryStage.setTitle("C   H   I   L   L");

@@ -8,6 +8,7 @@ import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Background;
@@ -35,7 +36,7 @@ class CustomConsole {
     private Font commonFont;
     private Font serverFont;
 
-    CustomConsole(StackPane parentPane, Client client){
+    CustomConsole(Client client, Scene scene){
 
         this.selectedMessages = new ArrayList<>();
         this.client = client;
@@ -47,12 +48,12 @@ class CustomConsole {
 
         textBox.setPadding(new Insets(13));
         textBox.setSpacing(5);
-        textBox.prefWidthProperty().bind(parentPane.widthProperty());
+        textBox.prefWidthProperty().bind(scene.widthProperty());
 
-        mainBox.prefHeightProperty().bind(parentPane.heightProperty());
-        mainBox.prefWidthProperty().bind(parentPane.widthProperty());
-        mainBox.maxHeightProperty().bind(parentPane.heightProperty());
-        mainBox.maxWidthProperty().bind(parentPane.widthProperty());
+        mainBox.prefHeightProperty().bind(scene.heightProperty());
+        mainBox.prefWidthProperty().bind(scene.widthProperty());
+        mainBox.maxHeightProperty().bind(scene.heightProperty());
+        mainBox.maxWidthProperty().bind(scene.widthProperty());
 
         if (DEBUG)
             mainBox.setStyle("-fx-border-color: red");
@@ -61,10 +62,10 @@ class CustomConsole {
         scrollPane.setContent(textBox);
         if (DEBUG)
             scrollPane.setStyle("-fx-border-color: green");
-        scrollPane.prefWidthProperty().bind(mainBox.widthProperty());
-        scrollPane.prefHeightProperty().bind(mainBox.heightProperty());
-        scrollPane.maxWidthProperty().bind(mainBox.widthProperty());
-        scrollPane.maxHeightProperty().bind(mainBox.heightProperty());
+        scrollPane.prefWidthProperty().bind(scene.widthProperty());
+        scrollPane.prefHeightProperty().bind(scene.heightProperty());
+        scrollPane.maxWidthProperty().bind(scene.widthProperty());
+        scrollPane.maxHeightProperty().bind(scene.heightProperty());
 
         scrollPane.setBackground(Background.EMPTY);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
